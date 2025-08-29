@@ -18,7 +18,7 @@ class SecureLogger {
   private isProduction: boolean;
 
   constructor() {
-    this.isProduction = process.env.NODE_ENV === 'production';
+    this.isProduction = import.meta.env.PROD;
     this.level = this.isProduction ? LogLevel.ERROR : LogLevel.DEBUG;
   }
 

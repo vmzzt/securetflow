@@ -89,7 +89,7 @@ export interface SecurityConfig {
 // Default security configuration
 export const defaultSecurityConfig: SecurityConfig = {
   https: {
-    enabled: process.env.NODE_ENV === 'production',
+    enabled: import.meta.env.PROD,
     certPath: './certs/localhost.pem',
     keyPath: './certs/localhost-key.pem'
   },
@@ -100,7 +100,7 @@ export const defaultSecurityConfig: SecurityConfig = {
     'X-XSS-Protection': '1; mode=block',
     'Referrer-Policy': 'strict-origin-when-cross-origin',
     'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
-    'Content-Security-Policy': process.env.NODE_ENV === 'production' 
+    'Content-Security-Policy': import.meta.env.PROD 
       ? "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' https:; font-src 'self'; connect-src 'self'; frame-ancestors 'none';"
       : "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' ws: wss:; frame-ancestors 'none';",
     'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=()',
@@ -127,7 +127,7 @@ export const defaultSecurityConfig: SecurityConfig = {
   },
   
   cors: {
-    allowedOrigins: process.env.NODE_ENV === 'production' 
+    allowedOrigins: import.meta.env.PROD 
       ? ['https://securetflow.com', 'https://www.securetflow.com']
       : ['http://localhost:3000', 'https://localhost:3000'],
     allowedMethods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
@@ -149,7 +149,7 @@ export const defaultSecurityConfig: SecurityConfig = {
   },
   
   logging: {
-    level: process.env.NODE_ENV === 'production' ? 'error' : 'debug',
+    level: import.meta.env.PROD ? 'error' : 'debug',
     enableConsole: true,
     enableServer: true,
     sanitizeData: true
@@ -172,7 +172,7 @@ export const defaultSecurityConfig: SecurityConfig = {
   },
   
   session: {
-    secure: process.env.NODE_ENV === 'production',
+    secure: import.meta.env.PROD,
     httpOnly: true,
     sameSite: 'strict',
     maxAge: 3600 // 1 hour
@@ -233,7 +233,7 @@ export const developmentSecurityConfig: SecurityConfig = {
 
 // Get current security configuration based on environment
 export const getSecurityConfig = (): SecurityConfig => {
-  switch (process.env.NODE_ENV) {
+  switch (import.meta.env.MODE) {
     case 'production':
       return productionSecurityConfig;
     case 'development':

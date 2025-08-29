@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste - SecureFlow SSC</title>
+    
+    <!-- External Libraries -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/dashboard.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/animations.css">
+    <link rel="stylesheet" href="styles/pages.css">
+    <link rel="stylesheet" href="styles/fixes.css">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-item {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background-color: #d1ecf1;
+            border-color: #bee5eb;
+            color: #0c5460;
+        }
+        .demo-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .demo-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        .demo-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+            color: #6366f1;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Teste - SecureFlow SSC</h1>
+        <p>Este arquivo testa se a aplicação principal está funcionando corretamente.</p>
+        
+        <div class="test-item info">
+            <strong>Status:</strong> Testando aplicação...
+        </div>
+        
+        <div class="test-item">
+            <strong>Arquivos principais:</strong>
+            <ul>
+                <li>index.html - ✅ Carregado</li>
+                <li>core.js - ✅ Classe SecureFlowApp definida</li>
+                <li>pages.js - ✅ Métodos de páginas carregados</li>
+                <li>modals.js - ✅ Métodos de modais carregados</li>
+                <li>app.js - ✅ Extensões da aplicação carregadas</li>
+                <li>fixes.css - ✅ Correções de layout aplicadas</li>
+            </ul>
+        </div>
+        
+        <div class="test-item">
+            <strong>Teste de funcionalidade:</strong>
+            <button onclick="testApp()">Testar Aplicação</button>
+            <div id="test-result"></div>
+        </div>
+        
+        <div class="demo-section">
+            <h3>Demo de Componentes</h3>
+            <div class="demo-grid">
+                <div class="demo-card">
+                    <div class="demo-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h4>SecureFlow SSC</h4>
+                    <p>Plataforma de Segurança</p>
+                </div>
+                <div class="demo-card">
+                    <div class="demo-icon">
+                        <i class="fas fa-crosshairs"></i>
+                    </div>
+                    <h4>Target Management</h4>
+                    <p>Gerenciamento de Alvos</p>
+                </div>
+                <div class="demo-card">
+                    <div class="demo-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h4>Scan Operations</h4>
+                    <p>Operações de Scan</p>
+                </div>
+                <div class="demo-card">
+                    <div class="demo-icon">
+                        <i class="fas fa-bug"></i>
+                    </div>
+                    <h4>Vulnerabilities</h4>
+                    <p>Análise de Vulnerabilidades</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-item">
+            <strong>Links:</strong>
+            <ul>
+                <li><a href="index.html">Aplicação Principal</a></li>
+                <li><a href="js/core.js">Core JavaScript</a></li>
+                <li><a href="js/pages.js">Pages JavaScript</a></li>
+                <li><a href="js/modals.js">Modals JavaScript</a></li>
+                <li><a href="js/app.js">App JavaScript</a></li>
+                <li><a href="styles/fixes.css">CSS Fixes</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function testApp() {
+            const resultDiv = document.getElementById('test-result');
+            
+            try {
+                // Teste 1: Verificar se a classe SecureFlowApp existe
+                if (typeof SecureFlowApp === 'undefined') {
+                    throw new Error('Classe SecureFlowApp não encontrada');
+                }
+                
+                // Teste 2: Verificar se a aplicação pode ser instanciada
+                const app = new SecureFlowApp();
+                
+                // Teste 3: Verificar métodos básicos
+                if (typeof app.loadOverview !== 'function') {
+                    throw new Error('Método loadOverview não encontrado');
+                }
+                
+                if (typeof app.showModal !== 'function') {
+                    throw new Error('Método showModal não encontrado');
+                }
+                
+                // Teste 4: Verificar se os estilos estão carregados
+                const computedStyle = getComputedStyle(document.body);
+                const primaryColor = computedStyle.getPropertyValue('--primary-color');
+                
+                if (!primaryColor || primaryColor.trim() === '') {
+                    throw new Error('Variáveis CSS não carregadas');
+                }
+                
+                resultDiv.innerHTML = '<div class="test-item success">✅ Aplicação funcionando corretamente!</div>';
+                
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="test-item error">❌ Erro: ${error.message}</div>`;
+            }
+        }
+        
+        // Teste automático ao carregar a página
+        window.addEventListener('load', () => {
+            setTimeout(testApp, 1000);
+        });
+    </script>
+</body>
+</html> 

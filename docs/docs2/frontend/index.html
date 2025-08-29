@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Securet Flow SSC - POC</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/dashboard.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/animations.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-content">
+            <div class="loading-logo">
+                <i class="fas fa-shield-alt"></i>
+                <span>Securet Flow SSC</span>
+            </div>
+            <div class="loading-spinner"></div>
+            <p>Inicializando plataforma enterprise-grade...</p>
+            <div class="loading-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <span class="progress-text">Carregando módulos...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="app" class="app-container" style="display: none;">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Securet Flow</span>
+                </div>
+                <div class="version">v1.0.0-ssc</div>
+                <div class="status-indicator">
+                    <span class="status-dot online"></span>
+                    <span class="status-text">Online</span>
+                </div>
+            </div>
+            
+            <div class="sidebar-menu">
+                <div class="menu-section">
+                    <h3>Dashboard</h3>
+                    <ul>
+                        <li class="active" data-page="dashboard">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Overview</span>
+                        </li>
+                        <li data-page="analytics">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Analytics</span>
+                        </li>
+                        <li data-page="monitoring">
+                            <i class="fas fa-desktop"></i>
+                            <span>Monitoring</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="menu-section">
+                    <h3>Target Management</h3>
+                    <ul>
+                        <li data-page="targets">
+                            <i class="fas fa-crosshairs"></i>
+                            <span>Targets</span>
+                            <span class="badge">12</span>
+                        </li>
+                        <li data-page="add-target">
+                            <i class="fas fa-plus-circle"></i>
+                            <span>Add Target</span>
+                        </li>
+                        <li data-page="target-analytics">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Risk Analysis</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="menu-section">
+                    <h3>Scan Operations</h3>
+                    <ul>
+                        <li data-page="scans">
+                            <i class="fas fa-search"></i>
+                            <span>Active Scans</span>
+                            <span class="badge running">8</span>
+                        </li>
+                        <li data-page="new-scan">
+                            <i class="fas fa-play-circle"></i>
+                            <span>New Scan</span>
+                        </li>
+                        <li data-page="scan-history">
+                            <i class="fas fa-history"></i>
+                            <span>Scan History</span>
+                        </li>
+                        <li data-page="custom-scan">
+                            <i class="fas fa-cogs"></i>
+                            <span>Custom Scan</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="menu-section">
+                    <h3>Results & Analysis</h3>
+                    <ul>
+                        <li data-page="vulnerabilities">
+                            <i class="fas fa-bug"></i>
+                            <span>Vulnerabilities</span>
+                            <span class="badge critical">15</span>
+                        </li>
+                        <li data-page="reports">
+                            <i class="fas fa-file-alt"></i>
+                            <span>Reports</span>
+                        </li>
+                        <li data-page="ai-analysis">
+                            <i class="fas fa-brain"></i>
+                            <span>AI Analysis</span>
+                        </li>
+                        <li data-page="results-by-target">
+                            <i class="fas fa-filter"></i>
+                            <span>Results by Target</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="menu-section">
+                    <h3>Tools & Arsenal</h3>
+                    <ul>
+                        <li data-page="tools">
+                            <i class="fas fa-tools"></i>
+                            <span>Tool Library</span>
+                            <span class="badge">100+</span>
+                        </li>
+                        <li data-page="integrations">
+                            <i class="fas fa-plug"></i>
+                            <span>Integrations</span>
+                        </li>
+                        <li data-page="workflows">
+                            <i class="fas fa-project-diagram"></i>
+                            <span>Workflows</span>
+                        </li>
+                        <li data-page="plugins">
+                            <i class="fas fa-puzzle-piece"></i>
+                            <span>Plugins</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="menu-section">
+                    <h3>DevSecOps</h3>
+                    <ul>
+                        <li data-page="pipelines">
+                            <i class="fas fa-stream"></i>
+                            <span>CI/CD Pipelines</span>
+                        </li>
+                        <li data-page="compliance">
+                            <i class="fas fa-clipboard-check"></i>
+                            <span>Compliance</span>
+                        </li>
+                        <li data-page="shift-left">
+                            <i class="fas fa-arrow-left"></i>
+                            <span>Shift Left</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="menu-section">
+                    <h3>Settings</h3>
+                    <ul>
+                        <li data-page="profile">
+                            <i class="fas fa-user-cog"></i>
+                            <span>Profile</span>
+                        </li>
+                        <li data-page="settings">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </li>
+                        <li data-page="terminal">
+                            <i class="fas fa-terminal"></i>
+                            <span>Terminal</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Header -->
+            <header class="top-header">
+                <div class="header-left">
+                    <button class="menu-toggle" id="menu-toggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="breadcrumb" id="breadcrumb">
+                        <span>Dashboard</span>
+                    </div>
+                </div>
+                
+                <div class="header-right">
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search targets, scans, vulnerabilities...">
+                        <div class="search-shortcuts">
+                            <span>Ctrl+K</span>
+                        </div>
+                    </div>
+                    
+                    <div class="notifications" id="notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                        <div class="notification-dropdown">
+                            <div class="notification-item">
+                                <i class="fas fa-exclamation-triangle text-warning"></i>
+                                <div class="notification-content">
+                                    <h4>Scan Completed</h4>
+                                    <p>Nmap scan on example.com found 5 open ports</p>
+                                    <span class="notification-time">2 min ago</span>
+                                </div>
+                            </div>
+                            <div class="notification-item">
+                                <i class="fas fa-bug text-danger"></i>
+                                <div class="notification-content">
+                                    <h4>Critical Vulnerability</h4>
+                                    <p>SQL Injection detected in login form</p>
+                                    <span class="notification-time">5 min ago</span>
+                                </div>
+                            </div>
+                            <div class="notification-item">
+                                <i class="fas fa-check-circle text-success"></i>
+                                <div class="notification-content">
+                                    <h4>AI Analysis Complete</h4>
+                                    <p>Vulnerability analysis completed by LLM</p>
+                                    <span class="notification-time">10 min ago</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="user-menu" id="user-menu">
+                        <img src="https://via.placeholder.com/32x32/6366f1/ffffff?text=AD" alt="Admin" class="user-avatar">
+                        <span>Admin</span>
+                        <i class="fas fa-chevron-down"></i>
+                        <div class="user-dropdown">
+                            <div class="user-info">
+                                <img src="https://via.placeholder.com/48x48/6366f1/ffffff?text=AD" alt="Admin">
+                                <div>
+                                    <h4>Administrator</h4>
+                                    <p>admin@purpleteam.local</p>
+                                </div>
+                            </div>
+                            <div class="user-actions">
+                                <a href="#" data-page="profile"><i class="fas fa-user"></i> Profile</a>
+                                <a href="#" data-page="settings"><i class="fas fa-cog"></i> Settings</a>
+                                <a href="#" class="logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content Container -->
+            <div class="page-container" id="page-container">
+                <!-- Dashboard Page (Default) -->
+                <div id="dashboard-page" class="page active">
+                    <!-- Dashboard content will be loaded here -->
+                </div>
+
+                <!-- Other pages will be dynamically loaded -->
+                <div id="targets-page" class="page"></div>
+                <div id="scans-page" class="page"></div>
+                <div id="vulnerabilities-page" class="page"></div>
+                <div id="reports-page" class="page"></div>
+                <div id="tools-page" class="page"></div>
+                <div id="analytics-page" class="page"></div>
+                <div id="ai-analysis-page" class="page"></div>
+                <div id="integrations-page" class="page"></div>
+                <div id="workflows-page" class="page"></div>
+                <div id="pipelines-page" class="page"></div>
+                <div id="compliance-page" class="page"></div>
+                <div id="settings-page" class="page"></div>
+                <div id="terminal-page" class="page"></div>
+                <div id="monitoring-page" class="page"></div>
+                <div id="custom-scan-page" class="page"></div>
+                <div id="results-by-target-page" class="page"></div>
+                <div id="plugins-page" class="page"></div>
+                <div id="shift-left-page" class="page"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="modal-container" class="modal-container"></div>
+
+    <!-- Scripts -->
+    <script src="js/app.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/targets.js"></script>
+    <script src="js/scans.js"></script>
+    <script src="js/vulnerabilities.js"></script>
+    <script src="js/reports.js"></script>
+    <script src="js/tools.js"></script>
+    <script src="js/analytics.js"></script>
+    <script src="js/ai-analysis.js"></script>
+    <script src="js/integrations.js"></script>
+    <script src="js/workflows.js"></script>
+    <script src="js/pipelines.js"></script>
+    <script src="js/compliance.js"></script>
+    <script src="js/settings.js"></script>
+    <script src="js/terminal.js"></script>
+    <script src="js/monitoring.js"></script>
+    <script src="js/custom-scan.js"></script>
+    <script src="js/results-by-target.js"></script>
+    <script src="js/plugins.js"></script>
+    <script src="js/shift-left.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/utils.js"></script>
+</body>
+</html>

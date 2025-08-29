@@ -7,7 +7,7 @@ import App from './App';
 import './styles/globals.css';
 
 // Suppress React Router future warnings in development
-if (process.env.NODE_ENV === 'development') {
+if (import.meta.env.DEV) {
   const originalWarn = console.warn;
   console.warn = (...args) => {
     if (args[0]?.includes?.('React Router Future Flag Warning')) {
@@ -22,7 +22,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 5 * 60 * 1000, // 5 minutes
-      gcTime: 10 * 60 * 1000, // 10 minutes (updated from cacheTime)
+      cacheTime: 10 * 60 * 1000, // 10 minutes (using cacheTime instead of gcTime)
       retry: 1,
       refetchOnWindowFocus: false
     }

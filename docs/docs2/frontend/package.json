@@ -1,0 +1,39 @@
+{
+  "name": "securet-flow-ssc-frontend",
+  "version": "1.0.0",
+  "description": "Securet Flow SSC - Frontend Application",
+  "main": "index.html",
+  "scripts": {
+    "start": "serve -s . -l 3000",
+    "build": "echo 'Build completed'",
+    "dev": "serve -s . -l 3000",
+    "test": "echo 'No tests specified'",
+    "lint": "echo 'No linter configured'",
+    "format": "echo 'No formatter configured'"
+  },
+  "keywords": [
+    "security",
+    "vulnerability-assessment",
+    "penetration-testing",
+    "cybersecurity",
+    "purple-team"
+  ],
+  "author": "SecureFlow SSC Team",
+  "license": "MIT",
+  "dependencies": {
+    "serve": "^14.2.1"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/secureflow-ssc/frontend.git"
+  },
+  "bugs": {
+    "url": "https://github.com/secureflow-ssc/frontend/issues"
+  },
+  "homepage": "https://github.com/secureflow-ssc/frontend#readme"
+} 

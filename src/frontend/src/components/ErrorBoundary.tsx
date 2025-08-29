@@ -24,7 +24,7 @@ class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // Log error to console in development
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       console.error('Error Boundary caught an error:', error, errorInfo);
     }
 
@@ -86,7 +86,7 @@ class ErrorBoundary extends Component<Props, State> {
                 </button>
               </div>
               
-              {process.env.NODE_ENV === 'development' && this.state.error && (
+              {import.meta.env.DEV && this.state.error && (
                 <details className="mt-6 text-left">
                   <summary className="text-sm text-gray-500 cursor-pointer hover:text-gray-700">
                     Detalhes do erro (apenas desenvolvimento)
@@ -137,7 +137,7 @@ export function withErrorBoundary<P extends object>(
 // Hook para capturar erros em componentes funcionais
 export function useErrorHandler() {
   return React.useCallback((error: Error, errorInfo?: ErrorInfo) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       console.error('Error caught by useErrorHandler:', error, errorInfo);
     }
   }, []);

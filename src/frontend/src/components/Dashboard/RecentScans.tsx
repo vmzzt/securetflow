@@ -1,119 +1,117 @@
 import React from 'react';
+import { motion } from 'framer-motion';
+import { ClockIcon, CheckCircleIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import { Card } from '@components/ui/Card';
 
 interface Scan {
-  id: number;
+  id: string | number;
   name: string;
-  status: string;
-  scan_type: string;
-  created_at: string;
-  started_at?: string;
-  completed_at?: string;
+  status: 'running' | 'completed' | 'failed' | 'pending';
+  target: string;
+  createdAt: string;
+  duration?: string;
 }
 
 interface RecentScansProps {
-  scans: Scan[];
-  className?: string;
+  scans?: Scan[];
 }
 
-export const RecentScans: React.FC<RecentScansProps> = ({
-  scans,
-  className = ''
+export const RecentScans: React.FC<RecentScansProps> = ({ 
+  scans = [
+    {
+      id: 1,
+      name: 'Scan de Vulnerabilidades Web',
+      status: 'completed',
+      target: 'https://example.com',
+      createdAt: new Date().toISOString(),
+      duration: '2m 34s'
+    },
+    {
+      id: 2, 
+      name: 'Scan de Portas',
+      status: 'running',
+      target: '192.168.1.100',
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: 3,
+      name: 'Scan de SSL/TLS', 
+      status: 'completed',
+      target: 'https://secure-site.com',
+      createdAt: new Date().toISOString(),
+      duration: '1m 12s'
+    }
+  ]
 }) => {
-  const getStatusColor = (status: string) => {
+  const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'running':
-        return 'bg-blue-100 text-blue-800';
       case 'completed':
-        return 'bg-green-100 text-green-800';
+        return <CheckCircleIcon className="w-5 h-5 text-green-500" />;
+      case 'running':
+        return <ClockIcon className="w-5 h-5 text-blue-500" />;
       case 'failed':
-        return 'bg-red-100 text-red-800';
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
+        return <ExclamationTriangleIcon className="w-5 h-5 text-red-500" />;
       default:
-        return 'bg-gray-100 text-gray-800';
+        return <ClockIcon className="w-5 h-5 text-gray-500" />;
     }
   };
 
-  const getStatusLabel = (status: string) => {
+  const getStatusText = (status: string) => {
     switch (status) {
-      case 'running':
-        return 'Executando';
       case 'completed':
         return 'Concluído';
+      case 'running':
+        return 'Executando';
       case 'failed':
         return 'Falhou';
-      case 'pending':
-        return 'Pendente';
       default:
-        return status;
+        return 'Pendente';
     }
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return 'text-green-600 bg-green-50';
+      case 'running':
+        return 'text-blue-600 bg-blue-50';
+      case 'failed':
+        return 'text-red-600 bg-red-50';
+      default:
+        return 'text-gray-600 bg-gray-50';
+    }
   };
 
-  if (scans.length === 0) {
-    return (
-      <div className={`text-center py-8 ${className}`}>
-        <div className="text-gray-500">
-          <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-          <h3 className="mt-2 text-sm font-medium text-gray-900">Nenhum scan encontrado</h3>
-          <p className="mt-1 text-sm text-gray-500">
-            Comece criando seu primeiro scan de segurança.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className={`space-y-4 ${className}`}>
-      {scans.map((scan) => (
-        <div key={scan.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-          <div className="flex-1 min-w-0">
+    <Card className="p-6">
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">Scans Recentes</h3>
+      <div className="space-y-4">
+        {scans.map((scan, index) => (
+          <motion.div
+            key={scan.id}
+            className="flex items-center justify-between p-4 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+          >
             <div className="flex items-center space-x-3">
-              <div className="flex-shrink-0">
-                <div className="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center">
-                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                </div>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">
-                  {scan.name}
-                </p>
-                <p className="text-sm text-gray-500">
-                  {scan.scan_type} • {formatDate(scan.created_at)}
-                </p>
+              {getStatusIcon(scan.status)}
+              <div>
+                <p className="font-medium text-gray-900">{scan.name}</p>
+                <p className="text-sm text-gray-500">{scan.target}</p>
               </div>
             </div>
-          </div>
-          <div className="flex-shrink-0 ml-4">
-            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(scan.status)}`}>
-              {getStatusLabel(scan.status)}
-            </span>
-          </div>
-        </div>
-      ))}
-      
-      {scans.length > 0 && (
-        <div className="text-center pt-4">
-          <button className="text-sm text-blue-600 hover:text-blue-800 font-medium">
-            Ver todos os scans →
-          </button>
-        </div>
-      )}
-    </div>
+            <div className="text-right">
+              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(scan.status)}`}>
+                {getStatusText(scan.status)}
+              </span>
+              {scan.duration && (
+                <p className="text-xs text-gray-500 mt-1">{scan.duration}</p>
+              )}
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </Card>
   );
 }; 

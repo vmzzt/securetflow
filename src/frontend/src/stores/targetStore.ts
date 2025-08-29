@@ -1,248 +1,119 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { api } from '../services/api/client';
 
-export interface Target {
-  id: number;
+interface Target {
+  id: string | number;
   name: string;
-  host: string;
-  port?: number;
-  protocol: string;
+  url: string;
+  type: 'web' | 'api' | 'network' | 'mobile';
+  status: 'active' | 'inactive' | 'scanning';
   description?: string;
-  user_id: number;
-  created_at: string;
-  updated_at: string;
+  lastScan?: string;
+  vulnerabilities?: number;
+  createdAt: string;
 }
 
-export interface TargetFilters {
-  search?: string;
-  protocol?: string;
-  port?: number;
-}
-
-export interface TargetState {
+interface TargetState {
   targets: Target[];
-  selectedTarget: Target | null;
-  loading: boolean;
+  isLoading: boolean;
   error: string | null;
-  filters: TargetFilters;
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    pages: number;
-  };
-}
 
-export interface TargetActions {
-  // State management
-  setTargets: (targets: Target[]) => void;
-  setSelectedTarget: (target: Target | null) => void;
+  // Actions
+  fetchTargets: () => Promise<Target[]>;
+  createTarget: (target: Partial<Target>) => Promise<Target>;
+  updateTarget: (id: string | number, updates: Partial<Target>) => void;
+  deleteTarget: (id: string | number) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
-  setFilters: (filters: TargetFilters) => void;
-  setPagination: (pagination: TargetState['pagination']) => void;
-  
-  // CRUD operations
-  fetchTargets: (params?: Record<string, any>) => Promise<void>;
-  fetchTarget: (id: number) => Promise<void>;
-  createTarget: (target: Omit<Target, 'id' | 'created_at' | 'updated_at' | 'user_id'>) => Promise<void>;
-  updateTarget: (id: number, target: Partial<Target>) => Promise<void>;
-  deleteTarget: (id: number) => Promise<void>;
-  
-  // Utility actions
-  clearError: () => void;
-  resetFilters: () => void;
-  addTarget: (target: Target) => void;
-  removeTarget: (id: number) => void;
-  updateTargetInList: (id: number, updates: Partial<Target>) => void;
 }
 
-export type TargetStore = TargetState & TargetActions;
-
-const initialState: TargetState = {
-  targets: [],
-  selectedTarget: null,
-  loading: false,
-  error: null,
-  filters: {},
-  pagination: {
-    page: 1,
-    limit: 10,
-    total: 0,
-    pages: 0,
-  },
-};
-
-export const useTargetStore = create<TargetStore>()(
-  persist(
-    (set, get) => ({
-      ...initialState,
-
-      // State management
-      setTargets: (targets) => set({ targets }),
-      setSelectedTarget: (selectedTarget) => set({ selectedTarget }),
-      setLoading: (loading) => set({ loading }),
-      setError: (error) => set({ error }),
-      setFilters: (filters) => set({ filters }),
-      setPagination: (pagination) => set({ pagination }),
-
-      // CRUD operations
-      fetchTargets: async (params = {}) => {
-        try {
-          set({ loading: true, error: null });
-          const response = await api.get('/targets/', { params });
-          set({ targets: response, loading: false });
-        } catch (error: any) {
-          set({ 
-            error: error.response?.data?.detail || 'Erro ao carregar targets',
-            loading: false 
-          });
-        }
-      },
-
-      fetchTarget: async (id) => {
-        try {
-          set({ loading: true, error: null });
-          const response = await api.get(`/targets/${id}`);
-          set({ selectedTarget: response, loading: false });
-        } catch (error: any) {
-          set({ 
-            error: error.response?.data?.detail || 'Erro ao carregar target',
-            loading: false 
-          });
-        }
-      },
-
-      createTarget: async (targetData) => {
-        try {
-          set({ loading: true, error: null });
-          const response = await api.post('/targets/', targetData);
-          const { targets } = get();
-          set({ 
-            targets: [response, ...targets],
-            loading: false 
-          });
-        } catch (error: any) {
-          set({ 
-            error: error.response?.data?.detail || 'Erro ao criar target',
-            loading: false 
-          });
-        }
-      },
-
-      updateTarget: async (id, targetData) => {
-        try {
-          set({ loading: true, error: null });
-          const response = await api.put(`/targets/${id}`, targetData);
-          const { targets } = get();
-          const updatedTargets = targets.map(target => 
-            target.id === id ? response : target
-          );
-          set({ 
-            targets: updatedTargets,
-            selectedTarget: response,
-            loading: false 
-          });
-        } catch (error: any) {
-          set({ 
-            error: error.response?.data?.detail || 'Erro ao atualizar target',
-            loading: false 
-          });
-        }
-      },
-
-      deleteTarget: async (id) => {
-        try {
-          set({ loading: true, error: null });
-          await api.delete(`/targets/${id}`);
-          const { targets } = get();
-          const filteredTargets = targets.filter(target => target.id !== id);
-          set({ 
-            targets: filteredTargets,
-            selectedTarget: null,
-            loading: false 
-          });
-        } catch (error: any) {
-          set({ 
-            error: error.response?.data?.detail || 'Erro ao deletar target',
-            loading: false 
-          });
-        }
-      },
-
-      // Utility actions
-      clearError: () => set({ error: null }),
-      resetFilters: () => set({ filters: {} }),
-      addTarget: (target) => {
-        const { targets } = get();
-        set({ targets: [target, ...targets] });
-      },
-      removeTarget: (id) => {
-        const { targets } = get();
-        set({ targets: targets.filter(target => target.id !== id) });
-      },
-      updateTargetInList: (id, updates) => {
-        const { targets } = get();
-        const updatedTargets = targets.map(target => 
-          target.id === id ? { ...target, ...updates } : target
-        );
-        set({ targets: updatedTargets });
-      },
-    }),
+export const useTargetStore = create<TargetState>((set, get) => ({
+  targets: [
     {
-      name: 'target-storage',
-      partialize: (state) => ({ 
-        targets: state.targets,
-        filters: state.filters,
-        pagination: state.pagination
-      }),
+      id: '1',
+      name: 'Site Principal',
+      url: 'https://example.com',
+      type: 'web',
+      status: 'active',
+      description: 'Site principal da empresa',
+      lastScan: new Date().toISOString(),
+      vulnerabilities: 3,
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: '2',
+      name: 'API Gateway',
+      url: 'https://api.example.com',
+      type: 'api',
+      status: 'active',
+      description: 'Gateway de APIs',
+      vulnerabilities: 1,
+      createdAt: new Date().toISOString()
     }
-  )
-);
+  ],
+  isLoading: false,
+  error: null,
 
-// Selectors for better performance
-export const targetSelectors = {
-  getTargetById: (id: number) => (state: TargetStore) =>
-    state.targets.find(target => target.id === id),
-  
-  getTargetsByProtocol: (protocol: string) => (state: TargetStore) =>
-    state.targets.filter(target => target.protocol === protocol),
-  
-  getTargetsByPort: (port: number) => (state: TargetStore) =>
-    state.targets.filter(target => target.port === port),
-  
-  getTargetsByHost: (host: string) => (state: TargetStore) =>
-    state.targets.filter(target => target.host.includes(host)),
-  
-  getFilteredTargets: (state: TargetStore) => {
-    const { targets, filters } = state;
-    let filtered = [...targets];
-
-    if (filters.search) {
-      const search = filters.search.toLowerCase();
-      filtered = filtered.filter(target =>
-        target.name.toLowerCase().includes(search) ||
-        target.host.toLowerCase().includes(search) ||
-        target.description?.toLowerCase().includes(search)
-      );
+  fetchTargets: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      // Mock API call
+      await new Promise(resolve => setTimeout(resolve, 800));
+      const targets = get().targets;
+      set({ targets, isLoading: false });
+      return targets;
+    } catch (error) {
+      set({ error: 'Erro ao carregar targets', isLoading: false });
+      return [];
     }
-
-    if (filters.protocol) {
-      filtered = filtered.filter(target => target.protocol === filters.protocol);
-    }
-
-    if (filters.port) {
-      filtered = filtered.filter(target => target.port === filters.port);
-    }
-
-    return filtered;
   },
 
-  getTargetsCount: (state: TargetStore) => state.targets.length,
-  
-  getTargetsByProtocolCount: (protocol: string) => (state: TargetStore) =>
-    state.targets.filter(target => target.protocol === protocol).length,
-};
+  createTarget: async (targetData: Partial<Target>) => {
+    set({ isLoading: true, error: null });
+    try {
+      // Mock API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      const newTarget: Target = {
+        id: Date.now().toString(),
+        name: targetData.name || 'Novo Target',
+        url: targetData.url || '',
+        type: targetData.type || 'web',
+        status: 'active',
+        vulnerabilities: 0,
+        createdAt: new Date().toISOString(),
+        ...targetData
+      };
+      
+      set(state => ({ 
+        targets: [...state.targets, newTarget], 
+        isLoading: false 
+      }));
+      
+      return newTarget;
+    } catch (error) {
+      set({ error: 'Erro ao criar target', isLoading: false });
+      throw error;
+    }
+  },
 
-export default useTargetStore; 
+  updateTarget: (id: string | number, updates: Partial<Target>) => {
+    set(state => ({
+      targets: state.targets.map(target => 
+        target.id === id ? { ...target, ...updates } : target
+      )
+    }));
+  },
+
+  deleteTarget: (id: string | number) => {
+    set(state => ({
+      targets: state.targets.filter(target => target.id !== id)
+    }));
+  },
+
+  setLoading: (loading: boolean) => {
+    set({ isLoading: loading });
+  },
+
+  setError: (error: string | null) => {
+    set({ error });
+  }
+})); 

@@ -22,6 +22,7 @@ import {
   CpuChipIcon,
   ServerIcon
 } from '@heroicons/react/24/outline';
+import { useAuthStore } from '@stores/authStore';
 
 interface NavItem {
   name: string;
@@ -119,176 +120,145 @@ const navItems: NavItem[] = [
     name: 'Compliance',
     path: '/compliance',
     icon: ShieldExclamationIcon,
-    description: 'Conformidade'
+    description: 'Conformidade e auditoria'
   },
   {
     name: 'Shift Left',
     path: '/shift-left',
     icon: BeakerIcon,
     description: 'Segurança no desenvolvimento'
-  },
-  {
-    name: 'Terminal',
-    path: '/terminal',
-    icon: CommandLineIcon,
-    description: 'Terminal integrado'
-  },
-  {
-    name: 'Profile',
-    path: '/profile',
-    icon: UserIcon,
-    description: 'Perfil do usuário'
-  },
-  {
-    name: 'Settings',
-    path: '/settings',
-    icon: CogIcon,
-    description: 'Configurações do sistema'
   }
 ];
 
 const Layout: React.FC = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const { user, logout } = useAuthStore();
 
-  // Mock user data for development
-  const user = {
-    username: 'Admin User',
-    role: 'Administrator'
-  };
+  // Check authentication on mount
+  useEffect(() => {
+    if (!user) {
+      navigate('/login');
+    }
+  }, [user, navigate]);
 
   const handleLogout = () => {
+    logout();
     navigate('/login');
   };
 
-  const toggleTheme = () => {
-    setTheme(theme === 'light' ? 'dark' : 'light');
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+    document.documentElement.classList.toggle('dark');
   };
 
-  const currentNavItem = navItems.find(item => item.path === location.pathname);
+  if (!user) {
+    return null; // Don't render anything if not authenticated
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="flex h-screen">
-        {/* Sidebar - SEMPRE VISÍVEL */}
-        <div className="w-64 bg-white shadow-lg flex flex-col">
-          {/* Logo */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-200">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <ShieldCheckIcon className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-xl font-bold text-gray-900">
-                Securet Flow
-              </span>
+    <div className={`min-h-screen ${darkMode ? 'dark' : ''}`}>
+      {/* Sidebar */}
+      <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0`}>
+        <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center space-x-2">
+            <ShieldCheckIcon className="w-8 h-8 text-blue-600" />
+            <span className="text-xl font-bold text-gray-900 dark:text-white">Securet Flow</span>
+          </div>
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className="lg:hidden p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800"
+          >
+            <XMarkIcon className="w-6 h-6" />
+          </button>
+        </div>
+
+        {/* Navigation */}
+        <nav className="flex-1 px-4 py-4 space-y-2 overflow-y-auto">
+          {navItems.map((item) => {
+            const isActive = location.pathname === item.path;
+            return (
+              <button
+                key={item.path}
+                onClick={() => navigate(item.path)}
+                className={`w-full flex items-center space-x-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                  isActive
+                    ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
+                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white'
+                }`}
+              >
+                <item.icon className="w-5 h-5" />
+                <span>{item.name}</span>
+              </button>
+            );
+          })}
+        </nav>
+
+        {/* User Profile */}
+        <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+              <UserIcon className="w-5 h-5 text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                {user.full_name || user.username}
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                {user.email}
+              </p>
             </div>
           </div>
+          <button
+            onClick={handleLogout}
+            className="w-full mt-3 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors dark:text-red-400 dark:hover:bg-red-900/20"
+          >
+            Sair
+          </button>
+        </div>
+      </div>
 
-          {/* Navigation */}
-          <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-            {navItems.map((item) => {
-              const isActive = location.pathname === item.path;
-              return (
-                <button
-                  key={item.path}
-                  onClick={() => navigate(item.path)}
-                  className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-all duration-200 ${
-                    isActive
-                      ? 'bg-blue-50 text-blue-600 border border-blue-200'
-                      : 'text-gray-700 hover:bg-gray-100'
-                  }`}
-                >
-                  <item.icon className="w-5 h-5" />
-                  <span className="font-medium">{item.name}</span>
-                </button>
-              );
-            })}
-          </nav>
+      {/* Main Content */}
+      <div className="lg:pl-64">
+        {/* Top Bar */}
+        <div className="sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-between h-16 px-4">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="lg:hidden p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800"
+            >
+              <Bars3Icon className="w-6 h-6" />
+            </button>
 
-          {/* User Profile */}
-          <div className="p-4 border-t border-gray-200">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center">
-                <UserIcon className="w-4 h-4 text-white" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">
-                  {user?.username || 'User'}
-                </p>
-                <p className="text-xs text-gray-500 truncate">
-                  {user?.role || 'User'}
-                </p>
-              </div>
+            <div className="flex items-center space-x-4">
               <button
-                onClick={handleLogout}
-                className="p-1 rounded-md text-gray-400 hover:text-gray-600"
+                onClick={toggleDarkMode}
+                className="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                </svg>
+                {darkMode ? <SunIcon className="w-5 h-5" /> : <MoonIcon className="w-5 h-5" />}
+              </button>
+              <button className="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800">
+                <BellIcon className="w-5 h-5" />
               </button>
             </div>
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Header */}
-          <header className="bg-white shadow-sm border-b border-gray-200">
-            <div className="flex items-center justify-between px-4 py-3">
-              <div className="flex items-center space-x-4">
-                <div>
-                  <h1 className="text-lg font-semibold text-gray-900">
-                    {currentNavItem?.name || 'Dashboard'}
-                  </h1>
-                  <p className="text-sm text-gray-500">
-                    {currentNavItem?.description || 'Visão geral do sistema'}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-3">
-                {/* Theme Toggle */}
-                <button
-                  onClick={toggleTheme}
-                  className="p-2 rounded-md text-gray-400 hover:text-gray-600 transition-colors"
-                >
-                  {theme === 'dark' ? (
-                    <SunIcon className="w-5 h-5" />
-                  ) : (
-                    <MoonIcon className="w-5 h-5" />
-                  )}
-                </button>
-
-                {/* Notifications */}
-                <button className="relative p-2 rounded-md text-gray-400 hover:text-gray-600 transition-colors">
-                  <BellIcon className="w-5 h-5" />
-                  <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                </button>
-
-                {/* User Menu */}
-                <div className="flex items-center space-x-2">
-                  <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center">
-                    <UserIcon className="w-4 h-4 text-white" />
-                  </div>
-                  <span className="text-sm font-medium text-gray-900">
-                    {user?.username || 'User'}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </header>
-
-          {/* Page Content */}
-          <main className="flex-1 overflow-y-auto bg-gray-50">
-            <div className="p-4 md:p-6">
-              <Outlet />
-            </div>
-          </main>
-        </div>
+        {/* Page Content */}
+        <main className="bg-gray-50 dark:bg-gray-800 min-h-screen">
+          <Outlet />
+        </main>
       </div>
+
+      {/* Mobile Overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-gray-600 bg-opacity-75 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
     </div>
   );
 };

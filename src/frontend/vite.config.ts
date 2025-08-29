@@ -64,9 +64,4 @@ export default defineConfig({
       'axios',
     ],
   },
-  
-  test: {
-    globals: true,
-    environment: 'jsdom',
-  },
 }); 

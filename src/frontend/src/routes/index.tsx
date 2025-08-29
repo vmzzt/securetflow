@@ -1,11 +1,14 @@
 import React, { Suspense } from 'react';
 import { RouteObject, Navigate } from 'react-router-dom';
-import Layout from '@components/layout/Layout';
-import LoadingSpinner from '@components/ui/LoadingSpinner';
+import Layout from '../components/layout/Layout';
+import LoadingSpinner from '../components/ui/LoadingSpinner';
 
 // Lazy load pages
-const Dashboard = React.lazy(() => import('@pages/Dashboard'));
-const Login = React.lazy(() => import('@pages/Login'));
+const Dashboard = React.lazy(() => import('../pages/Dashboard'));
+const Login = React.lazy(() => import('../pages/Login'));
+const Scans = React.lazy(() => import('../pages/Scans'));
+const Targets = React.lazy(() => import('../pages/Targets'));
+const Vulnerabilities = React.lazy(() => import('../pages/Vulnerabilities'));
 
 // Loading component
 const PageLoader = () => (
@@ -38,6 +41,18 @@ export const routes: RouteObject[] = [
       {
         path: 'dashboard',
         element: withSuspense(Dashboard),
+      },
+      {
+        path: 'scans',
+        element: withSuspense(Scans),
+      },
+      {
+        path: 'targets',
+        element: withSuspense(Targets),
+      },
+      {
+        path: 'vulnerabilities',
+        element: withSuspense(Vulnerabilities),
       },
     ],
   },

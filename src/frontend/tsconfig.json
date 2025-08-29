@@ -14,11 +14,11 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
-    /* Linting - Simplified */
-    "strict": false,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "noFallthroughCasesInSwitch": false,
+    /* Linting - Production ready */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
 
     /* Path mapping */
     "baseUrl": ".",

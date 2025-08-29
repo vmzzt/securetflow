@@ -1,4 +1,9 @@
-from pydantic import BaseModel, EmailStr, validator
+"""
+Securet Flow SSC - Authentication Schemas
+Pydantic schemas for authentication and user management
+"""
+
+from pydantic import BaseModel, field_validator, EmailStr
 from typing import Optional
 from datetime import datetime
 
@@ -18,11 +23,21 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: str
     
-    @validator('password')
+    @field_validator('password')
+    @classmethod
     def validate_password(cls, v):
         if len(v) < 8:
             raise ValueError('Password must be at least 8 characters long')
         return v
+    
+    @field_validator('username')
+    @classmethod
+    def validate_username(cls, v):
+        if len(v) < 3:
+            raise ValueError('Username must be at least 3 characters long')
+        if not v.isalnum():
+            raise ValueError('Username must contain only alphanumeric characters')
+        return v.lower()
 
 class UserUpdate(BaseModel):
     username: Optional[str] = None

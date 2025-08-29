@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
@@ -7,7 +7,9 @@ from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.core.database import get_db
-from app.models.user import User
+
+if TYPE_CHECKING:
+    from app.models.user import User
 
 # Configuração de senha
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -49,7 +51,7 @@ def verify_token(token: str) -> Optional[str]:
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db)
-) -> User:
+) -> "User":
     """Obtém o usuário atual baseado no token JWT"""
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -65,13 +67,14 @@ async def get_current_user(
     except JWTError:
         raise credentials_exception
     
+    from app.models.user import User
     user = db.query(User).filter(User.username == username).first()
     if user is None:
         raise credentials_exception
     
     return user
 
-async def get_current_active_user(current_user: User = Depends(get_current_user)) -> User:
+async def get_current_active_user(current_user: "User" = Depends(get_current_user)) -> "User":
     """Obtém o usuário atual ativo"""
     if not current_user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")

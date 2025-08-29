@@ -10,7 +10,7 @@ from app.core.auth import (
     get_current_user,
     get_current_active_user
 )
-from app.models import User
+from app.models.user import User
 from app.schemas.auth import Token, UserCreate, UserResponse
 from app.core.config import settings
 

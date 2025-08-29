@@ -7,7 +7,6 @@ import asyncio
 from typing import AsyncGenerator, Generator
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from sqlalchemy.orm import sessionmaker, Session
-from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.pool import NullPool
 import logging
@@ -25,14 +24,6 @@ async_engine = create_async_engine(
     pool_recycle=300,
 )
 
-# Create sync engine for current endpoints
-sync_engine = create_engine(
-    settings.DATABASE_URL,
-    echo=settings.DEBUG,
-    pool_pre_ping=True,
-    pool_recycle=300,
-)
-
 # Create async session factory
 AsyncSessionLocal = async_sessionmaker(
     async_engine,
@@ -42,11 +33,11 @@ AsyncSessionLocal = async_sessionmaker(
     autoflush=False,
 )
 
-# Create sync session factory
+# Create sync session factory (for compatibility with existing endpoints)
 SessionLocal = sessionmaker(
     autocommit=False,
     autoflush=False,
-    bind=sync_engine
+    bind=async_engine.sync_engine if hasattr(async_engine, 'sync_engine') else None
 )
 
 # Base class for models
@@ -67,7 +58,6 @@ async def close_db():
     """Close database connections"""
     try:
         await async_engine.dispose()
-        sync_engine.dispose()
         logger.info("Database connections closed")
     except Exception as e:
         logger.error(f"Database closure failed: {e}")
@@ -75,15 +65,34 @@ async def close_db():
 # Sync version for current endpoints
 def get_db() -> Generator[Session, None, None]:
     """Get database session (sync version)"""
-    db = SessionLocal()
+    # For now, we'll use a simple session with the async engine
+    # This is a temporary solution until we migrate all endpoints to async
     try:
-        yield db
+        # Create a sync session using the async engine's sync interface
+        if hasattr(async_engine, 'sync_engine'):
+            db = SessionLocal()
+        else:
+            # Fallback: create a new sync engine for compatibility
+            from sqlalchemy import create_engine
+            sync_engine = create_engine(
+                settings.DATABASE_URL,
+                echo=settings.DEBUG,
+                pool_pre_ping=True,
+                pool_recycle=300,
+            )
+            db = sessionmaker(autocommit=False, autoflush=False, bind=sync_engine)()
+        
+        try:
+            yield db
+        except Exception as e:
+            db.rollback()
+            logger.error(f"Database session error: {e}")
+            raise
+        finally:
+            db.close()
     except Exception as e:
-        db.rollback()
-        logger.error(f"Database session error: {e}")
+        logger.error(f"Database session creation failed: {e}")
         raise
-    finally:
-        db.close()
 
 # Async version for future use
 async def get_async_db() -> AsyncGenerator[AsyncSession, None]:

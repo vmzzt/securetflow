@@ -3,6 +3,7 @@ services:
   postgres:
     image: postgres:15
     container_name: securetflow-postgres
+    user: "999:999"  # Non-root user
     environment:
       POSTGRES_DB: securet_flow
       POSTGRES_USER: securet_user
@@ -14,16 +15,21 @@ services:
     networks:
       - securet-network
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
 
   # Redis Cache
   redis:
     image: redis:7-alpine
     container_name: securetflow-redis
+    user: "999:999"  # Non-root user
     ports:
       - "6379:6379"
     networks:
       - securet-network
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
 
   # Backend API
   backend:
@@ -31,6 +37,7 @@ services:
       context: ./src/backend
       dockerfile: Dockerfile
     container_name: securetflow-backend
+    user: "1000:1000"  # Non-root user
     environment:
       - DATABASE_URL=postgresql://securet_user:securet_password@postgres:5432/securet_flow
       - REDIS_URL=redis://redis:6379
@@ -48,6 +55,8 @@ services:
     networks:
       - securet-network
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
 
   # Frontend
   frontend:
@@ -55,6 +64,7 @@ services:
       context: ./src/frontend
       dockerfile: Dockerfile
     container_name: securetflow-frontend
+    user: "1000:1000"  # Non-root user
     ports:
       - "3000:3000"
     environment:
@@ -64,11 +74,14 @@ services:
     networks:
       - securet-network
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
 
   # Nginx (Reverse Proxy)
   nginx:
     image: nginx:alpine
     container_name: securetflow-nginx
+    user: "101:101"  # Nginx user
     ports:
       - "80:80"
       - "443:443"
@@ -80,6 +93,8 @@ services:
     networks:
       - securet-network
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
 
 volumes:
   postgres_data:

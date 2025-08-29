@@ -76,10 +76,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/secureflow-ssc/frontend.git"
+    "url": "https://github.com/vmzzt/securetflow.git"
   },
   "bugs": {
-    "url": "https://github.com/secureflow-ssc/frontend/issues"
+    "url": "https://github.com/vmzzt/securetflow/issues"
   },
-  "homepage": "https://github.com/secureflow-ssc/frontend#readme"
+  "homepage": "https://github.com/vmzzt/securetflow#readme"
 }

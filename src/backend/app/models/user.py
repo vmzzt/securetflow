@@ -4,11 +4,10 @@ User database model and operations
 """
 
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from datetime import datetime
 
-Base = declarative_base()
+from app.core.database import Base
 
 class User(Base):
     __tablename__ = "users"

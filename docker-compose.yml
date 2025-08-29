@@ -3,7 +3,6 @@ services:
   postgres:
     image: postgres:15
     container_name: securetflow-postgres
-    user: "999:999"  # Non-root user
     environment:
       POSTGRES_DB: securet_flow
       POSTGRES_USER: securet_user

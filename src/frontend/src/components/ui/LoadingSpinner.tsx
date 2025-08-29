@@ -1,6 +1,4 @@
 import React from 'react';
-import { motion } from 'framer-motion';
-import clsx from 'clsx';
 
 interface LoadingSpinnerProps {
   size?: 'sm' | 'md' | 'lg';
@@ -19,13 +17,8 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
 
   return (
     <div className={`flex items-center justify-center ${className}`}>
-      <motion.div
-        className={clsx(
-          'border-2 border-gray-200 border-t-blue-600 rounded-full',
-          sizeClasses[size]
-        )}
-        animate={{ rotate: 360 }}
-        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+      <div 
+        className={`${sizeClasses[size]} border-2 border-gray-200 border-t-blue-600 rounded-full animate-spin`} 
       />
     </div>
   );

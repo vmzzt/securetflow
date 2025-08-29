@@ -1,5 +1,7 @@
+# Use Node.js Alpine image
 FROM node:20-alpine
 
+# Set working directory
 WORKDIR /app
 
 # Copy package files
@@ -11,14 +13,8 @@ RUN npm install
 # Copy source code
 COPY . .
 
-# Build application
-RUN npm run build
-
-# Install serve to run the built app
-RUN npm install -g serve
-
 # Expose port
 EXPOSE 3000
 
-# Start application
-CMD ["serve", "-s", "dist", "-l", "3000"] 
+# Start development server
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"] 

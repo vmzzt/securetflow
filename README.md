@@ -353,13 +353,6 @@ docker-compose -f docker-compose.prod.yml up -d
 - 🔄 Automação de workflows
 - 🔄 Machine Learning para detecção
 
-## 📞 **Suporte**
-
-### **Canais de Ajuda**
-- 📧 Email: suporte@securet-flow.com
-- 💬 Discord: [Link do servidor]
-- 📖 Documentação: [Link da docs]
-- 🐛 Issues: [GitHub Issues]
 
 ### **FAQ**
 **Q: Como resetar a senha?**

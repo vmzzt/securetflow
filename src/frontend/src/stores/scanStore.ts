@@ -1,29 +1,25 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { apiService, API_ENDPOINTS } from '../services/api/client';
+import { api } from '../services/api/client';
 
 export interface Scan {
-  id: string;
+  id: number;
   name: string;
-  target: string;
-  targetName: string;
-  type: 'vulnerability' | 'port' | 'web' | 'api' | 'custom';
-  status: 'pending' | 'running' | 'completed' | 'failed' | 'paused';
-  progress: number;
-  startTime: string;
-  endTime?: string;
-  duration?: string;
-  vulnerabilities: number;
-  critical: number;
-  high: number;
-  medium: number;
-  low: number;
-  tools: string[];
   description?: string;
-  config: Record<string, any>;
-  logs?: string[];
-  createdAt: string;
-  updatedAt: string;
+  target_id: number;
+  user_id: number;
+  status: 'pending' | 'running' | 'completed' | 'failed' | 'paused';
+  scan_type: string;
+  created_at: string;
+  started_at?: string;
+  completed_at?: string;
+  progress?: number;
+  vulnerabilities?: {
+    critical: number;
+    high: number;
+    medium: number;
+    low: number;
+  };
 }
 
 export interface ScanFilters {
@@ -62,26 +58,26 @@ export interface ScanActions {
   
   // CRUD operations
   fetchScans: (params?: Record<string, any>) => Promise<void>;
-  fetchScan: (id: string) => Promise<void>;
-  createScan: (scan: Omit<Scan, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
-  updateScan: (id: string, scan: Partial<Scan>) => Promise<void>;
-  deleteScan: (id: string) => Promise<void>;
+  fetchScan: (id: number) => Promise<void>;
+  createScan: (scan: Omit<Scan, 'id' | 'created_at' | 'user_id'>) => Promise<void>;
+  updateScan: (id: number, scan: Partial<Scan>) => Promise<void>;
+  deleteScan: (id: number) => Promise<void>;
   
   // Scan operations
-  startScan: (id: string) => Promise<void>;
-  stopScan: (id: string) => Promise<void>;
-  pauseScan: (id: string) => Promise<void>;
-  resumeScan: (id: string) => Promise<void>;
-  getScanResults: (id: string) => Promise<void>;
-  getScanLogs: (id: string) => Promise<void>;
+  startScan: (id: number) => Promise<void>;
+  stopScan: (id: number) => Promise<void>;
+  pauseScan: (id: number) => Promise<void>;
+  resumeScan: (id: number) => Promise<void>;
+  getScanResults: (id: number) => Promise<void>;
+  getScanLogs: (id: number) => Promise<void>;
   
   // Utility actions
   clearError: () => void;
   resetFilters: () => void;
   addScan: (scan: Scan) => void;
-  removeScan: (id: string) => void;
-  updateScanInList: (id: string, updates: Partial<Scan>) => void;
-  updateScanProgress: (id: string, progress: number) => void;
+  removeScan: (id: number) => void;
+  updateScanInList: (id: number, updates: Partial<Scan>) => void;
+  updateScanProgress: (id: number, progress: number) => void;
 }
 
 export type ScanStore = ScanState & ScanActions;
@@ -108,8 +104,8 @@ export const useScanStore = create<ScanStore>()(
 
       // State management
       setScans: (scans) => set({ scans }),
-      setSelectedScan: (scan) => set({ selectedScan: scan }),
-      setRunningScans: (scans) => set({ runningScans: scans }),
+      setSelectedScan: (selectedScan) => set({ selectedScan }),
+      setRunningScans: (runningScans) => set({ runningScans }),
       setLoading: (loading) => set({ loading }),
       setError: (error) => set({ error }),
       setFilters: (filters) => set({ filters }),
@@ -117,326 +113,197 @@ export const useScanStore = create<ScanStore>()(
 
       // CRUD operations
       fetchScans: async (params = {}) => {
-        const { filters, pagination } = get();
-        
-        set({ loading: true, error: null });
-        
         try {
-          const queryParams = {
-            page: pagination.page,
-            limit: pagination.limit,
-            ...filters,
-            ...params,
-          };
-
-          const response = await apiService.get<Scan[]>(API_ENDPOINTS.SCANS.LIST, queryParams);
-          
-          if (response.success) {
-            const runningScans = response.data.filter(scan => scan.status === 'running');
-            set({
-              scans: response.data,
-              runningScans,
-              pagination: response.pagination || pagination,
-              loading: false,
-            });
-          } else {
-            set({ error: response.error || 'Failed to fetch scans', loading: false });
-          }
-        } catch (error) {
-          set({ error: 'Failed to fetch scans', loading: false });
+          set({ loading: true, error: null });
+          const response = await api.get('/scans/', { params });
+          set({ scans: response, loading: false });
+        } catch (error: any) {
+          set({ 
+            error: error.response?.data?.detail || 'Erro ao carregar scans',
+            loading: false 
+          });
         }
       },
 
-      fetchScan: async (id: string) => {
-        set({ loading: true, error: null });
-        
+      fetchScan: async (id) => {
         try {
-          const response = await apiService.get<Scan>(API_ENDPOINTS.SCANS.GET(id));
-          
-          if (response.success) {
-            set({ selectedScan: response.data, loading: false });
-          } else {
-            set({ error: response.error || 'Failed to fetch scan', loading: false });
-          }
-        } catch (error) {
-          set({ error: 'Failed to fetch scan', loading: false });
+          set({ loading: true, error: null });
+          const response = await api.get(`/scans/${id}`);
+          set({ selectedScan: response, loading: false });
+        } catch (error: any) {
+          set({ 
+            error: error.response?.data?.detail || 'Erro ao carregar scan',
+            loading: false 
+          });
         }
       },
 
       createScan: async (scanData) => {
-        set({ loading: true, error: null });
-        
         try {
-          const response = await apiService.post<Scan>(API_ENDPOINTS.SCANS.CREATE, scanData);
-          
-          if (response.success) {
-            const { scans } = get();
-            set({
-              scans: [...scans, response.data],
-              loading: false,
-            });
-          } else {
-            set({ error: response.error || 'Failed to create scan', loading: false });
-          }
-        } catch (error) {
-          set({ error: 'Failed to create scan', loading: false });
+          set({ loading: true, error: null });
+          const response = await api.post('/scans/', scanData);
+          const { scans } = get();
+          set({ 
+            scans: [response, ...scans],
+            loading: false 
+          });
+        } catch (error: any) {
+          set({ 
+            error: error.response?.data?.detail || 'Erro ao criar scan',
+            loading: false 
+          });
         }
       },
 
-      updateScan: async (id: string, scanData) => {
-        set({ loading: true, error: null });
-        
+      updateScan: async (id, scanData) => {
         try {
-          const response = await apiService.put<Scan>(API_ENDPOINTS.SCANS.UPDATE(id), scanData);
-          
-          if (response.success) {
-            const { scans, selectedScan, runningScans } = get();
-            const updatedScans = scans.map(scan =>
-              scan.id === id ? { ...scan, ...response.data } : scan
-            );
-            
-            const updatedRunningScans = runningScans.map(scan =>
-              scan.id === id ? { ...scan, ...response.data } : scan
-            );
-            
-            set({
-              scans: updatedScans,
-              runningScans: updatedRunningScans,
-              selectedScan: selectedScan?.id === id ? response.data : selectedScan,
-              loading: false,
-            });
-          } else {
-            set({ error: response.error || 'Failed to update scan', loading: false });
-          }
-        } catch (error) {
-          set({ error: 'Failed to update scan', loading: false });
+          set({ loading: true, error: null });
+          const response = await api.put(`/scans/${id}`, scanData);
+          const { scans } = get();
+          const updatedScans = scans.map(scan => 
+            scan.id === id ? response : scan
+          );
+          set({ 
+            scans: updatedScans,
+            selectedScan: response,
+            loading: false 
+          });
+        } catch (error: any) {
+          set({ 
+            error: error.response?.data?.detail || 'Erro ao atualizar scan',
+            loading: false 
+          });
         }
       },
 
-      deleteScan: async (id: string) => {
-        set({ loading: true, error: null });
-        
+      deleteScan: async (id) => {
         try {
-          const response = await apiService.delete(API_ENDPOINTS.SCANS.DELETE(id));
-          
-          if (response.success) {
-            const { scans, selectedScan, runningScans } = get();
-            const filteredScans = scans.filter(scan => scan.id !== id);
-            const filteredRunningScans = runningScans.filter(scan => scan.id !== id);
-            
-            set({
-              scans: filteredScans,
-              runningScans: filteredRunningScans,
-              selectedScan: selectedScan?.id === id ? null : selectedScan,
-              loading: false,
-            });
-          } else {
-            set({ error: response.error || 'Failed to delete scan', loading: false });
-          }
-        } catch (error) {
-          set({ error: 'Failed to delete scan', loading: false });
+          set({ loading: true, error: null });
+          await api.delete(`/scans/${id}`);
+          const { scans } = get();
+          const filteredScans = scans.filter(scan => scan.id !== id);
+          set({ 
+            scans: filteredScans,
+            selectedScan: null,
+            loading: false 
+          });
+        } catch (error: any) {
+          set({ 
+            error: error.response?.data?.detail || 'Erro ao deletar scan',
+            loading: false 
+          });
         }
       },
 
       // Scan operations
-      startScan: async (id: string) => {
-        set({ loading: true, error: null });
-        
+      startScan: async (id) => {
         try {
-          const response = await apiService.post(API_ENDPOINTS.SCANS.START(id));
-          
-          if (response.success) {
-            const { scans, runningScans } = get();
-            const updatedScans = scans.map(scan =>
-              scan.id === id ? { ...scan, status: 'running', progress: 0 } : scan
-            );
-            
-            const scanToAdd = scans.find(scan => scan.id === id);
-            if (scanToAdd) {
-              const updatedRunningScans = [...runningScans, { ...scanToAdd, status: 'running', progress: 0 }];
-              set({ scans: updatedScans, runningScans: updatedRunningScans, loading: false });
-            }
-          } else {
-            set({ error: response.error || 'Failed to start scan', loading: false });
-          }
-        } catch (error) {
-          set({ error: 'Failed to start scan', loading: false });
+          set({ loading: true, error: null });
+          await api.post(`/scans/${id}/start`);
+          await get().fetchScans();
+          set({ loading: false });
+        } catch (error: any) {
+          set({ 
+            error: error.response?.data?.detail || 'Erro ao iniciar scan',
+            loading: false 
+          });
         }
       },
 
-      stopScan: async (id: string) => {
-        set({ loading: true, error: null });
-        
+      stopScan: async (id) => {
         try {
-          const response = await apiService.post(API_ENDPOINTS.SCANS.STOP(id));
-          
-          if (response.success) {
-            const { scans, runningScans } = get();
-            const updatedScans = scans.map(scan =>
-              scan.id === id ? { ...scan, status: 'failed', progress: 0 } : scan
-            );
-            
-            const filteredRunningScans = runningScans.filter(scan => scan.id !== id);
-            set({ scans: updatedScans, runningScans: filteredRunningScans, loading: false });
-          } else {
-            set({ error: response.error || 'Failed to stop scan', loading: false });
-          }
-        } catch (error) {
-          set({ error: 'Failed to stop scan', loading: false });
+          set({ loading: true, error: null });
+          await api.post(`/scans/${id}/stop`);
+          await get().fetchScans();
+          set({ loading: false });
+        } catch (error: any) {
+          set({ 
+            error: error.response?.data?.detail || 'Erro ao parar scan',
+            loading: false 
+          });
         }
       },
 
-      pauseScan: async (id: string) => {
-        set({ loading: true, error: null });
-        
+      pauseScan: async (id) => {
         try {
-          const response = await apiService.post(API_ENDPOINTS.SCANS.PAUSE(id));
-          
-          if (response.success) {
-            const { scans, runningScans } = get();
-            const updatedScans = scans.map(scan =>
-              scan.id === id ? { ...scan, status: 'paused' } : scan
-            );
-            
-            const filteredRunningScans = runningScans.filter(scan => scan.id !== id);
-            set({ scans: updatedScans, runningScans: filteredRunningScans, loading: false });
-          } else {
-            set({ error: response.error || 'Failed to pause scan', loading: false });
-          }
-        } catch (error) {
-          set({ error: 'Failed to pause scan', loading: false });
+          set({ loading: true, error: null });
+          // Implementar quando o backend suportar
+          set({ loading: false });
+        } catch (error: any) {
+          set({ 
+            error: 'Funcionalidade não implementada',
+            loading: false 
+          });
         }
       },
 
-      resumeScan: async (id: string) => {
-        set({ loading: true, error: null });
-        
+      resumeScan: async (id) => {
         try {
-          const response = await apiService.post(API_ENDPOINTS.SCANS.RESUME(id));
-          
-          if (response.success) {
-            const { scans, runningScans } = get();
-            const updatedScans = scans.map(scan =>
-              scan.id === id ? { ...scan, status: 'running' } : scan
-            );
-            
-            const scanToAdd = scans.find(scan => scan.id === id);
-            if (scanToAdd) {
-              const updatedRunningScans = [...runningScans, { ...scanToAdd, status: 'running' }];
-              set({ scans: updatedScans, runningScans: updatedRunningScans, loading: false });
-            }
-          } else {
-            set({ error: response.error || 'Failed to resume scan', loading: false });
-          }
-        } catch (error) {
-          set({ error: 'Failed to resume scan', loading: false });
+          set({ loading: true, error: null });
+          // Implementar quando o backend suportar
+          set({ loading: false });
+        } catch (error: any) {
+          set({ 
+            error: 'Funcionalidade não implementada',
+            loading: false 
+          });
         }
       },
 
-      getScanResults: async (id: string) => {
-        set({ loading: true, error: null });
-        
+      getScanResults: async (id) => {
         try {
-          const response = await apiService.get(API_ENDPOINTS.SCANS.RESULTS(id));
-          
-          if (response.success) {
-            const { scans } = get();
-            const updatedScans = scans.map(scan =>
-              scan.id === id ? { ...scan, ...response.data } : scan
-            );
-            
-            set({ scans: updatedScans, loading: false });
-          } else {
-            set({ error: response.error || 'Failed to fetch scan results', loading: false });
-          }
-        } catch (error) {
-          set({ error: 'Failed to fetch scan results', loading: false });
+          set({ loading: true, error: null });
+          // Implementar quando o backend suportar
+          set({ loading: false });
+        } catch (error: any) {
+          set({ 
+            error: 'Funcionalidade não implementada',
+            loading: false 
+          });
         }
       },
 
-      getScanLogs: async (id: string) => {
-        set({ loading: true, error: null });
-        
+      getScanLogs: async (id) => {
         try {
-          const response = await apiService.get(API_ENDPOINTS.SCANS.LOGS(id));
-          
-          if (response.success) {
-            const { scans } = get();
-            const updatedScans = scans.map(scan =>
-              scan.id === id ? { ...scan, logs: response.data } : scan
-            );
-            
-            set({ scans: updatedScans, loading: false });
-          } else {
-            set({ error: response.error || 'Failed to fetch scan logs', loading: false });
-          }
-        } catch (error) {
-          set({ error: 'Failed to fetch scan logs', loading: false });
+          set({ loading: true, error: null });
+          // Implementar quando o backend suportar
+          set({ loading: false });
+        } catch (error: any) {
+          set({ 
+            error: 'Funcionalidade não implementada',
+            loading: false 
+          });
         }
       },
 
       // Utility actions
       clearError: () => set({ error: null }),
-      
       resetFilters: () => set({ filters: {} }),
-      
       addScan: (scan) => {
-        const { scans, runningScans } = get();
-        set({ scans: [...scans, scan] });
-        
-        if (scan.status === 'running') {
-          set({ runningScans: [...runningScans, scan] });
-        }
+        const { scans } = get();
+        set({ scans: [scan, ...scans] });
       },
-      
-      removeScan: (id: string) => {
-        const { scans, selectedScan, runningScans } = get();
-        const filteredScans = scans.filter(scan => scan.id !== id);
-        const filteredRunningScans = runningScans.filter(scan => scan.id !== id);
-        
-        set({
-          scans: filteredScans,
-          runningScans: filteredRunningScans,
-          selectedScan: selectedScan?.id === id ? null : selectedScan,
-        });
+      removeScan: (id) => {
+        const { scans } = get();
+        set({ scans: scans.filter(scan => scan.id !== id) });
       },
-      
-      updateScanInList: (id: string, updates) => {
-        const { scans, selectedScan, runningScans } = get();
-        const updatedScans = scans.map(scan =>
+      updateScanInList: (id, updates) => {
+        const { scans } = get();
+        const updatedScans = scans.map(scan => 
           scan.id === id ? { ...scan, ...updates } : scan
         );
-        
-        const updatedRunningScans = runningScans.map(scan =>
-          scan.id === id ? { ...scan, ...updates } : scan
-        );
-        
-        set({
-          scans: updatedScans,
-          runningScans: updatedRunningScans,
-          selectedScan: selectedScan?.id === id ? { ...selectedScan, ...updates } : selectedScan,
-        });
+        set({ scans: updatedScans });
       },
-
-      updateScanProgress: (id: string, progress: number) => {
-        const { scans, runningScans } = get();
-        const updatedScans = scans.map(scan =>
-          scan.id === id ? { ...scan, progress } : scan
-        );
-        
-        const updatedRunningScans = runningScans.map(scan =>
-          scan.id === id ? { ...scan, progress } : scan
-        );
-        
-        set({ scans: updatedScans, runningScans: updatedRunningScans });
+      updateScanProgress: (id, progress) => {
+        get().updateScanInList(id, { progress });
       },
     }),
     {
-      name: 'scan-store',
-      partialize: (state) => ({
+      name: 'scan-storage',
+      partialize: (state) => ({ 
         scans: state.scans,
         filters: state.filters,
-        pagination: state.pagination,
+        pagination: state.pagination
       }),
     }
   )
@@ -444,14 +311,14 @@ export const useScanStore = create<ScanStore>()(
 
 // Selectors for better performance
 export const scanSelectors = {
-  getScanById: (id: string) => (state: ScanStore) =>
+  getScanById: (id: number) => (state: ScanStore) =>
     state.scans.find(scan => scan.id === id),
   
   getScansByStatus: (status: string) => (state: ScanStore) =>
     state.scans.filter(scan => scan.status === status),
   
   getScansByType: (type: string) => (state: ScanStore) =>
-    state.scans.filter(scan => scan.type === type),
+    state.scans.filter(scan => scan.scan_type === type),
   
   getRunningScans: (state: ScanStore) =>
     state.scans.filter(scan => scan.status === 'running'),
@@ -462,8 +329,8 @@ export const scanSelectors = {
   getFailedScans: (state: ScanStore) =>
     state.scans.filter(scan => scan.status === 'failed'),
   
-  getScansByTarget: (targetId: string) => (state: ScanStore) =>
-    state.scans.filter(scan => scan.target === targetId),
+  getScansByTarget: (targetId: number) => (state: ScanStore) =>
+    state.scans.filter(scan => scan.target_id === targetId),
   
   getFilteredScans: (state: ScanStore) => {
     const { scans, filters } = state;
@@ -473,7 +340,6 @@ export const scanSelectors = {
       const search = filters.search.toLowerCase();
       filtered = filtered.filter(scan =>
         scan.name.toLowerCase().includes(search) ||
-        scan.targetName.toLowerCase().includes(search) ||
         scan.description?.toLowerCase().includes(search)
       );
     }
@@ -483,19 +349,19 @@ export const scanSelectors = {
     }
 
     if (filters.type) {
-      filtered = filtered.filter(scan => scan.type === filters.type);
+      filtered = filtered.filter(scan => scan.scan_type === filters.type);
     }
 
     if (filters.target) {
-      filtered = filtered.filter(scan => scan.target === filters.target);
+      filtered = filtered.filter(scan => scan.target_id === parseInt(filters.target, 10));
     }
 
     if (filters.dateFrom) {
-      filtered = filtered.filter(scan => scan.startTime >= filters.dateFrom!);
+      filtered = filtered.filter(scan => scan.created_at >= filters.dateFrom!);
     }
 
     if (filters.dateTo) {
-      filtered = filtered.filter(scan => scan.startTime <= filters.dateTo!);
+      filtered = filtered.filter(scan => scan.created_at <= filters.dateTo!);
     }
 
     return filtered;

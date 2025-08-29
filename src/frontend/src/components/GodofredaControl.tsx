@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/Card';
+import { Card } from './ui/Card';
 import { Button } from './ui/Button';
 
 interface GodofredaStatus {
@@ -104,118 +104,127 @@ export const GodofredaControl: React.FC = () => {
     }
   };
 
-  const getStatusText = () => {
-    if (!status) return 'Carregando...';
-    if (!status.enabled) return 'Desabilitada';
-    if (!status.available) return 'Indisponível';
-    return 'Online';
-  };
-
-  const getStatusColor = () => {
-    if (!status) return 'text-gray-500';
-    if (!status.enabled) return 'text-gray-500';
-    if (!status.available) return 'text-red-500';
-    return 'text-green-500';
-  };
+  if (loading) {
+    return (
+      <Card title="Godofreda Control">
+        <div className="text-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-2 text-gray-600">Carregando status...</p>
+        </div>
+      </Card>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      {/* Status e Controle */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span>🤖 Godofreda AI</span>
-            <span className={`font-medium ${getStatusColor()}`}>
-              {getStatusText()}
-            </span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {status && (
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <span className="font-medium">Host:</span> {status.host}:{status.port}
-              </div>
-              <div>
-                <span className="font-medium">Modelo LLM:</span> {status.llm_model}
-              </div>
-              <div>
-                <span className="font-medium">TTS:</span> 
-                <span className={`ml-2 ${status.tts_enabled ? 'text-green-500' : 'text-gray-500'}`}>
-                  {status.tts_enabled ? 'Ativado' : 'Desativado'}
-                </span>
-              </div>
-              <div>
-                <span className="font-medium">Status:</span> 
-                <span className={`ml-2 ${status.available ? 'text-green-500' : 'text-red-500'}`}>
-                  {status.available ? 'Disponível' : 'Indisponível'}
-                </span>
-              </div>
-            </div>
-          )}
-          
-          <div className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={status?.enabled || false}
-              onChange={(e) => toggleGodofreda(e.target.checked)}
-              disabled={loading}
-              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-            />
-            <span className="text-sm font-medium">
-              {status?.enabled ? 'Ativada' : 'Desativada'}
+      {/* Status Card */}
+      <Card title="Status do Godofreda">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-gray-700">Status:</span>
+            <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+              status?.enabled 
+                ? 'bg-green-100 text-green-800' 
+                : 'bg-red-100 text-red-800'
+            }`}>
+              {status?.enabled ? 'Ativo' : 'Inativo'}
             </span>
           </div>
           
-          <div className="flex space-x-2">
-            <Button onClick={loadStatus} disabled={loading} variant="outline" size="sm">
-              {loading ? 'Carregando...' : 'Atualizar Status'}
-            </Button>
-            <Button onClick={testConnection} disabled={testing} variant="outline" size="sm">
-              {testing ? 'Testando...' : 'Testar Conexão'}
-            </Button>
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-gray-700">Disponível:</span>
+            <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+              status?.available 
+                ? 'bg-green-100 text-green-800' 
+                : 'bg-red-100 text-red-800'
+            }`}>
+              {status?.available ? 'Sim' : 'Não'}
+            </span>
           </div>
-        </CardContent>
+          
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-gray-700">Host:</span>
+            <span className="text-sm text-gray-600">{status?.host || 'N/A'}</span>
+          </div>
+          
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-gray-700">Porta:</span>
+            <span className="text-sm text-gray-600">{status?.port || 'N/A'}</span>
+          </div>
+          
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-gray-700">Modelo LLM:</span>
+            <span className="text-sm text-gray-600">{status?.llm_model || 'N/A'}</span>
+          </div>
+          
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-gray-700">TTS Habilitado:</span>
+            <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+              status?.tts_enabled 
+                ? 'bg-green-100 text-green-800' 
+                : 'bg-red-100 text-red-800'
+            }`}>
+              {status?.tts_enabled ? 'Sim' : 'Não'}
+            </span>
+          </div>
+        </div>
+        
+        <div className="mt-6 flex space-x-3">
+          <Button
+            onClick={() => toggleGodofreda(!status?.enabled)}
+            disabled={loading}
+            className="flex-1"
+          >
+            {status?.enabled ? 'Desativar' : 'Ativar'}
+          </Button>
+          
+          <Button
+            onClick={testConnection}
+            disabled={testing}
+            variant="outline"
+            className="flex-1"
+          >
+            {testing ? 'Testando...' : 'Testar Conexão'}
+          </Button>
+        </div>
       </Card>
 
-      {/* Chat com Godofreda */}
-      {status?.enabled && status?.available && (
-        <Card>
-          <CardHeader>
-            <CardTitle>💬 Chat com Godofreda</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <textarea
-              placeholder="Digite sua mensagem para a Godofreda..."
+      {/* Chat Card */}
+      <Card title="Chat com Godofreda">
+        <div className="space-y-4">
+          <div className="flex space-x-2">
+            <input
+              type="text"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              rows={3}
-              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="Digite sua mensagem..."
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
             />
-            
-            <Button 
-              onClick={sendMessage} 
+            <Button
+              onClick={sendMessage}
               disabled={sending || !message.trim()}
-              className="w-full"
             >
-              {sending ? 'Enviando...' : 'Enviar Mensagem'}
+              {sending ? 'Enviando...' : 'Enviar'}
             </Button>
-
-            {response && (
-              <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                <h4 className="font-medium mb-2">Resposta da Godofreda:</h4>
-                <p className="text-sm">{response.response}</p>
-                {response.audio_url && (
-                  <audio controls className="mt-2 w-full">
-                    <source src={response.audio_url} type="audio/mpeg" />
-                    Seu navegador não suporta áudio.
+          </div>
+          
+          {response && (
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+              <h4 className="font-medium text-gray-900 mb-2">Resposta:</h4>
+              <p className="text-gray-700">{response.response}</p>
+              {response.audio_url && (
+                <div className="mt-3">
+                  <audio controls className="w-full">
+                    <source src={response.audio_url} type="audio/wav" />
+                    Seu navegador não suporta o elemento de áudio.
                   </audio>
-                )}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </Card>
     </div>
   );
 }; 

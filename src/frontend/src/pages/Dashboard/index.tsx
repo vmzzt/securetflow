@@ -1,38 +1,115 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   ShieldCheckIcon,
   ExclamationTriangleIcon,
   ChartBarIcon,
   ServerIcon,
-  CheckCircleIcon
+  CheckCircleIcon,
+  ClockIcon,
+  UserIcon,
+  GlobeAltIcon
 } from '@heroicons/react/24/outline';
+import { Card } from '@components/ui/Card';
+import { MetricCard } from '@components/ui/MetricCard';
+import { VulnerabilityChart } from '@components/charts/VulnerabilityChart';
+import { RecentScans } from '@components/Dashboard/RecentScans';
+import { useAuthStore } from '@stores/authStore';
+import { useScanStore } from '@stores/scanStore';
+import { useTargetStore } from '@stores/targetStore';
+import { api } from '@services/api/client';
+
+interface DashboardStats {
+  totalScans: number;
+  activeScans: number;
+  completedScans: number;
+  totalTargets: number;
+  vulnerabilities: {
+    critical: number;
+    high: number;
+    medium: number;
+    low: number;
+  };
+  recentScans: any[];
+}
 
 const Dashboard: React.FC = () => {
+  const { user } = useAuthStore();
+  const { scans, fetchScans } = useScanStore();
+  const { targets, fetchTargets } = useTargetStore();
+  const [stats, setStats] = useState<DashboardStats>({
+    totalScans: 0,
+    activeScans: 0,
+    completedScans: 0,
+    totalTargets: 0,
+    vulnerabilities: { critical: 0, high: 0, medium: 0, low: 0 },
+    recentScans: []
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadDashboardData = async () => {
+      try {
+        setLoading(true);
+        
+        // Carregar dados em paralelo
+        const [scansData, targetsData, statsData] = await Promise.all([
+          fetchScans(),
+          fetchTargets(),
+          api.get('/dashboard/stats').catch(() => null)
+        ]);
+
+        // Se temos dados de stats da API, usar eles
+        if (statsData) {
+          setStats(statsData);
+        } else {
+          // Calcular stats localmente
+          const activeScans = scans.filter(scan => scan.status === 'running').length;
+          const completedScans = scans.filter(scan => scan.status === 'completed').length;
+          
+          setStats({
+            totalScans: scans.length,
+            activeScans,
+            completedScans,
+            totalTargets: targets.length,
+            vulnerabilities: { critical: 0, high: 0, medium: 0, low: 0 },
+            recentScans: scans.slice(0, 5)
+          });
+        }
+      } catch (error) {
+        console.error('Erro ao carregar dashboard:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadDashboardData();
+  }, [fetchScans, fetchTargets, scans, targets]);
+
   const metrics = [
     {
-      name: 'Total Vulnerabilidades',
-      value: '156',
+      name: 'Total de Scans',
+      value: stats.totalScans.toString(),
       change: '+12%',
-      changeType: 'increase',
-      icon: ExclamationTriangleIcon,
-      color: 'text-red-600',
-      bgColor: 'bg-red-50'
-    },
-    {
-      name: 'Scans Ativos',
-      value: '8',
-      change: '+2',
-      changeType: 'increase',
-      icon: ChartBarIcon,
+      changeType: 'positive' as const,
+      icon: '📊',
       color: 'text-blue-600',
       bgColor: 'bg-blue-50'
     },
     {
+      name: 'Scans Ativos',
+      value: stats.activeScans.toString(),
+      change: '+2',
+      changeType: 'positive' as const,
+      icon: '⏰',
+      color: 'text-orange-600',
+      bgColor: 'bg-orange-50'
+    },
+    {
       name: 'Targets Monitorados',
-      value: '24',
+      value: stats.totalTargets.toString(),
       change: '+3',
-      changeType: 'increase',
-      icon: ServerIcon,
+      changeType: 'positive' as const,
+      icon: '🖥️',
       color: 'text-green-600',
       bgColor: 'bg-green-50'
     },
@@ -40,17 +117,25 @@ const Dashboard: React.FC = () => {
       name: 'Sistema Online',
       value: '99.9%',
       change: '+0.1%',
-      changeType: 'increase',
-      icon: CheckCircleIcon,
+      changeType: 'positive' as const,
+      icon: '✅',
       color: 'text-emerald-600',
       bgColor: 'bg-emerald-50'
     }
   ];
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-lg shadow p-6">
+      <Card>
         <div className="flex items-center space-x-3">
           <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
             <ShieldCheckIcon className="w-6 h-6 text-white" />
@@ -60,106 +145,133 @@ const Dashboard: React.FC = () => {
               🛡️ Securet Flow SSC
             </h1>
             <p className="text-gray-600">
-              Dashboard de Segurança - Sistema Completo Funcionando!
+              Bem-vindo, {user?.full_name || user?.username}! Dashboard de Segurança Funcionando.
             </p>
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Status do Sistema */}
-      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-        <div className="flex items-center">
-          <CheckCircleIcon className="w-5 h-5 text-green-600 mr-2" />
-          <span className="text-green-800 font-medium">
-            ✅ SISTEMA FUNCIONANDO PERFEITAMENTE!
-          </span>
+      <Card>
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+          <div className="flex items-center">
+            <CheckCircleIcon className="w-5 h-5 text-green-600 mr-2" />
+            <span className="text-green-800 font-medium">
+              ✅ SISTEMA FUNCIONANDO PERFEITAMENTE!
+            </span>
+          </div>
+          <p className="text-green-700 mt-1">
+            Menu lateral, navegação e todas as páginas estão operacionais.
+          </p>
         </div>
-        <p className="text-green-700 mt-1">
-          Menu lateral, navegação e todas as páginas estão operacionais.
-        </p>
-      </div>
+      </Card>
 
       {/* Métricas */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {metrics.map((metric) => (
-          <div key={metric.name} className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center">
-              <div className={`p-2 rounded-lg ${metric.bgColor}`}>
-                <metric.icon className={`w-6 h-6 ${metric.color}`} />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">{metric.name}</p>
-                <p className="text-2xl font-bold text-gray-900">{metric.value}</p>
-              </div>
-            </div>
-            <div className="mt-4">
-              <span className={`text-sm font-medium ${
-                metric.changeType === 'increase' ? 'text-green-600' : 'text-red-600'
-              }`}>
-                {metric.change}
+        <MetricCard
+          title="Total de Scans"
+          value={stats.totalScans}
+          change="+12%"
+          changeType="positive"
+          icon="📊"
+        />
+        <MetricCard
+          title="Scans Ativos"
+          value={stats.activeScans}
+          change="+2"
+          changeType="positive"
+          icon="⏰"
+        />
+        <MetricCard
+          title="Targets Monitorados"
+          value={stats.totalTargets}
+          change="+3"
+          changeType="positive"
+          icon="🖥️"
+        />
+        <MetricCard
+          title="Sistema Online"
+          value="99.9%"
+          change="+0.1%"
+          changeType="positive"
+          icon="✅"
+        />
+      </div>
+
+      {/* Gráficos e Estatísticas */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Gráfico de Vulnerabilidades */}
+        <Card title="Distribuição de Vulnerabilidades">
+          <VulnerabilityChart data={stats.vulnerabilities} />
+        </Card>
+
+        {/* Scans Recentes */}
+        <Card title="Scans Recentes">
+          <RecentScans scans={stats.recentScans} />
+        </Card>
+      </div>
+
+      {/* Informações do Sistema */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card title="Informações do Usuário">
+          <div className="space-y-3">
+            <div className="flex items-center space-x-2">
+              <UserIcon className="w-5 h-5 text-gray-500" />
+              <span className="text-sm text-gray-600">
+                {user?.full_name || user?.username}
               </span>
-              <span className="text-sm text-gray-500 ml-1">vs período anterior</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <GlobeAltIcon className="w-5 h-5 text-gray-500" />
+              <span className="text-sm text-gray-600">
+                {user?.email}
+              </span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <CheckCircleIcon className="w-5 h-5 text-green-500" />
+              <span className="text-sm text-green-600">
+                Conta Ativa
+              </span>
             </div>
           </div>
-        ))}
-      </div>
+        </Card>
 
-      {/* Funcionalidades Testadas */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">
-          ✅ Funcionalidades Testadas e Funcionando:
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <div className="flex items-center text-green-600">
-              <CheckCircleIcon className="w-4 h-4 mr-2" />
-              <span>Menu Lateral Visível</span>
+        <Card title="Status dos Serviços">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600">Backend API</span>
+              <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
+                Online
+              </span>
             </div>
-            <div className="flex items-center text-green-600">
-              <CheckCircleIcon className="w-4 h-4 mr-2" />
-              <span>Navegação Funcionando</span>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600">Banco de Dados</span>
+              <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
+                Online
+              </span>
             </div>
-            <div className="flex items-center text-green-600">
-              <CheckCircleIcon className="w-4 h-4 mr-2" />
-              <span>Layout Responsivo</span>
-            </div>
-            <div className="flex items-center text-green-600">
-              <CheckCircleIcon className="w-4 h-4 mr-2" />
-              <span>Todas as Páginas Carregando</span>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600">Redis Cache</span>
+              <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
+                Online
+              </span>
             </div>
           </div>
-          <div className="space-y-2">
-            <div className="flex items-center text-green-600">
-              <CheckCircleIcon className="w-4 h-4 mr-2" />
-              <span>Lazy Loading Funcionando</span>
-            </div>
-            <div className="flex items-center text-green-600">
-              <CheckCircleIcon className="w-4 h-4 mr-2" />
-              <span>Roteamento Ativo</span>
-            </div>
-            <div className="flex items-center text-green-600">
-              <CheckCircleIcon className="w-4 h-4 mr-2" />
-              <span>Componentes UI Funcionais</span>
-            </div>
-            <div className="flex items-center text-green-600">
-              <CheckCircleIcon className="w-4 h-4 mr-2" />
-              <span>Sistema Completo Operacional</span>
-            </div>
-          </div>
-        </div>
-      </div>
+        </Card>
 
-      {/* Instruções */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <h3 className="text-lg font-medium text-blue-900 mb-2">
-          🎯 Como Testar o Sistema:
-        </h3>
-        <ul className="text-blue-800 space-y-1">
-          <li>• Use o menu lateral para navegar entre as páginas</li>
-          <li>• Teste todas as funcionalidades disponíveis</li>
-          <li>• Verifique se o layout está responsivo</li>
-          <li>• Confirme que todas as páginas carregam corretamente</li>
-        </ul>
+        <Card title="Ações Rápidas">
+          <div className="space-y-3">
+            <button className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+              Novo Scan
+            </button>
+            <button className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+              Adicionar Target
+            </button>
+            <button className="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+              Gerar Relatório
+            </button>
+          </div>
+        </Card>
       </div>
     </div>
   );

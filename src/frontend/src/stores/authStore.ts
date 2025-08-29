@@ -1,136 +1,153 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import { api } from '@/services/api/client';
 
-// Basic interfaces
 export interface User {
-  id: string;
-  name: string;
+  id: number;
+  username: string;
   email: string;
-  role: string;
-  avatar?: string;
-  permissions: string[];
-}
-
-export interface AuthToken {
-  access: string;
-  refresh: string;
-  expires: number;
+  full_name?: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface LoginCredentials {
+  username: string;
+  password: string;
+}
+
+export interface RegisterData {
+  username: string;
   email: string;
   password: string;
+  full_name?: string;
 }
 
 export interface AuthState {
   user: User | null;
-  token: AuthToken | null;
   isAuthenticated: boolean;
-  isLoading: boolean;
+  loading: boolean;
   error: string | null;
   
   // Actions
   login: (credentials: LoginCredentials) => Promise<void>;
+  register: (data: RegisterData) => Promise<void>;
   logout: () => void;
-  refreshToken: () => Promise<void>;
-  updateProfile: (user: Partial<User>) => void;
+  refreshUser: () => Promise<void>;
   clearError: () => void;
 }
 
-export const useAuthStore = create<AuthState>((set, get) => ({
-  user: null,
-  token: null,
-  isAuthenticated: false,
-  isLoading: false,
-  error: null,
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set, get) => ({
+      user: null,
+      isAuthenticated: false,
+      loading: false,
+      error: null,
 
-  login: async (credentials: LoginCredentials) => {
-    set({ isLoading: true, error: null });
-    
-    try {
-      // Mock login - replace with real API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Mock validation
-      if (credentials.email === 'admin@securet-flow.com' && credentials.password === 'admin123') {
-        const user: User = {
-          id: '1',
-          name: 'Admin User',
-          email: credentials.email,
-          role: 'admin',
-          avatar: 'https://via.placeholder.com/40',
-          permissions: ['read', 'write', 'admin']
-        };
-        
-        const token: AuthToken = {
-          access: 'mock-jwt-token-' + Date.now(),
-          refresh: 'mock-refresh-token-' + Date.now(),
-          expires: Date.now() + 3600000 // 1 hour
-        };
+      login: async (credentials: LoginCredentials) => {
+        try {
+          set({ loading: true, error: null });
+          
+          const response = await api.post('/auth/login', credentials);
+          
+          // Salvar token
+          localStorage.setItem('access_token', response.access_token);
+          
+          // Buscar dados do usuário
+          const userResponse = await api.get('/auth/me');
+          
+          set({
+            user: userResponse,
+            isAuthenticated: true,
+            loading: false,
+            error: null
+          });
+          
+        } catch (error: any) {
+          set({
+            loading: false,
+            error: error.response?.data?.detail || 'Erro ao fazer login',
+            isAuthenticated: false,
+            user: null
+          });
+          throw error;
+        }
+      },
+
+      register: async (data: RegisterData) => {
+        try {
+          set({ loading: true, error: null });
+          
+          const response = await api.post('/auth/register', data);
+          
+          set({
+            user: response,
+            isAuthenticated: false,
+            loading: false,
+            error: null
+          });
+          
+        } catch (error: any) {
+          set({
+            loading: false,
+            error: error.response?.data?.detail || 'Erro ao registrar usuário'
+          });
+          throw error;
+        }
+      },
+
+      logout: () => {
+        // Remover token
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('user');
         
         set({
-          user,
-          token,
-          isAuthenticated: true,
-          isLoading: false,
+          user: null,
+          isAuthenticated: false,
+          loading: false,
           error: null
         });
-      } else {
-        throw new Error('Invalid credentials');
-      }
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Login failed';
-      set({
-        isLoading: false,
-        error: errorMessage
-      });
+      },
+
+      refreshUser: async () => {
+        try {
+          const token = localStorage.getItem('access_token');
+          if (!token) {
+            set({ isAuthenticated: false, user: null });
+            return;
+          }
+          
+          const user = await api.get('/auth/me');
+          
+          set({
+            user,
+            isAuthenticated: true,
+            error: null
+          });
+          
+        } catch (error: any) {
+          // Token inválido ou expirado
+          localStorage.removeItem('access_token');
+          set({
+            user: null,
+            isAuthenticated: false,
+            error: null
+          });
+        }
+      },
+
+      clearError: () => {
+        set({ error: null });
+      },
+    }),
+    {
+      name: 'auth-storage',
+      partialize: (state) => ({ 
+        user: state.user,
+        isAuthenticated: state.isAuthenticated 
+      }),
     }
-  },
-
-  logout: () => {
-    set({
-      user: null,
-      token: null,
-      isAuthenticated: false,
-      isLoading: false,
-      error: null
-    });
-  },
-
-  refreshToken: async () => {
-    try {
-      // Mock token refresh - replace with real API call
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      const newToken: AuthToken = {
-        access: 'mock-jwt-token-refreshed-' + Date.now(),
-        refresh: 'mock-refresh-token-refreshed-' + Date.now(),
-        expires: Date.now() + 3600000 // 1 hour
-      };
-      
-      set({
-        token: newToken,
-        isAuthenticated: true
-      });
-    } catch (error) {
-      set({
-        user: null,
-        token: null,
-        isAuthenticated: false
-      });
-    }
-  },
-
-  updateProfile: (user: Partial<User>) => {
-    const currentUser = get().user;
-    
-    if (currentUser) {
-      set({
-        user: { ...currentUser, ...user }
-      });
-    }
-  },
-
-  clearError: () => {
-    set({ error: null });
-  }
-})); 
+  )
+); 

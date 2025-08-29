@@ -1,434 +1,391 @@
-# 🚀 Securet Flow SSC - Super Sistema de Segurança Cibernética
+# 🛡️ Securet Flow SSC - Super Sistema de Segurança
 
-[![CI/CD](https://github.com/securet-flow/ssc/actions/workflows/ci.yml/badge.svg)](https://github.com/securet-flow/ssc/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![React 18](https://img.shields.io/badge/React-18.2.0-blue.svg)](https://reactjs.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.115.6-green.svg)](https://fastapi.tiangolo.com/)
+[![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/)
+[![React](https://img.shields.io/badge/React-18.2+-blue.svg)](https://reactjs.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-green.svg)](https://fastapi.tiangolo.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-blue.svg)](https://www.postgresql.org/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
 
-> **Securet Flow SSC** é um super sistema completo de segurança cibernética que integra análise de vulnerabilidades, IA multimodal, monitoramento em tempo real e automação de segurança em uma plataforma unificada e enterprise-grade.
+> **Sistema Enterprise de Segurança Cibernética com IA Integrada**
 
-## 🎯 Visão Geral
+Securet Flow SSC é uma plataforma completa de segurança cibernética que combina análise de vulnerabilidades, monitoramento em tempo real, automação de scans e inteligência artificial para proteger infraestruturas críticas.
 
-O **Securet Flow SSC** é um super projeto que combina:
+## 🚀 **Características Principais**
 
-- 🔍 **Análise de Vulnerabilidades** - Scanner completo com 130+ ferramentas integradas
-- 🤖 **IA Multimodal** - Godofreda VTuber com análise inteligente
-- 💬 **Chatbot de Segurança** - Assistente IA especializado
-- 📊 **Dashboard Unificado** - Interface moderna e responsiva
-- 📈 **Monitoramento Simplificado** - Logs e métricas básicas
-- 🐳 **Containerização Completa** - Docker e Kubernetes ready
-- 🚀 **Arquitetura Escalável** - Microserviços e cloud-native
+### 🎯 **Funcionalidades Core**
+- **🔍 Análise de Vulnerabilidades**: Scans automatizados e manuais
+- **📊 Dashboard Interativo**: Métricas em tempo real e visualizações
+- **🤖 IA Integrada**: Análise inteligente de ameaças
+- **🎯 Gerenciamento de Targets**: Controle completo de alvos
+- **📈 Relatórios Avançados**: Documentação detalhada de findings
+- **🔒 Autenticação JWT**: Sistema seguro de login
+- **📱 Interface Responsiva**: Funciona em desktop e mobile
 
-## 🏗️ Arquitetura Limpa e Focada
+### 🛠️ **Tecnologias Utilizadas**
 
-```
-Securet Flow SSC/
-├── 🎨 src/frontend/           # Frontend principal (React + TypeScript)
-│   ├── Dashboard/            # Interface unificada
-│   ├── Settings/             # Configurações (inclui Godofreda)
-│   ├── Security Tools/       # Ferramentas integradas
-│   └── Monitoring/           # Métricas e alertas
-├── 🔧 src/backend/            # Backend principal (FastAPI)
-│   ├── Auth Service/         # Autenticação e autorização
-│   ├── Scan Engine/          # Motor de scans
-│   ├── Godofreda Service/    # Integração com Godofreda
-│   └── Tools Integration/    # Ferramentas de segurança
-├── 🤖 src/ai/godofreda/       # Módulo Godofreda (opcional)
-│   ├── backend/             # Backend da Godofreda
-│   ├── llm/                 # LLM da Godofreda
-│   └── config.py           # Configuração do módulo
-├── 🛠️ src/tools/             # Ferramentas de segurança
-├── 📊 monitoring/            # Stack de monitoramento
-└── 🐳 docker/               # Configurações Docker
-```
+#### **Backend**
+- **FastAPI** - Framework web moderno e rápido
+- **PostgreSQL** - Banco de dados robusto
+- **Redis** - Cache de alta performance
+- **SQLAlchemy** - ORM para Python
+- **JWT** - Autenticação segura
+- **Pydantic** - Validação de dados
 
-## 🚀 Instalação Rápida
+#### **Frontend**
+- **React 18** - Interface moderna
+- **TypeScript** - Tipagem estática
+- **Tailwind CSS** - Design system
+- **Zustand** - Gerenciamento de estado
+- **Axios** - Cliente HTTP
+- **React Router** - Navegação
 
-### Pré-requisitos
+#### **Infraestrutura**
+- **Docker** - Containerização
+- **Nginx** - Proxy reverso
+- **Docker Compose** - Orquestração
 
-- **Docker** 20.10+ e **Docker Compose** 2.0+
-- **Node.js** 18+ (para desenvolvimento)
-- **Python** 3.11+ (para desenvolvimento)
-- **Git** (para clonar o repositório)
+## 📋 **Índice**
 
-### 1. Clone o Repositório
+- [Instalação](#-instalação)
+- [Configuração](#-configuração)
+- [Uso](#-uso)
+- [API](#-api)
+- [Arquitetura](#-arquitetura)
+- [Segurança](#-segurança)
+- [Contribuição](#-contribuição)
+- [Licença](#-licença)
+
+## 🚀 **Instalação**
+
+### **Pré-requisitos**
+- Docker e Docker Compose
+- Git
+- 4GB RAM mínimo
+- 10GB espaço em disco
+
+### **Instalação Rápida**
+
 ```bash
-git clone https://github.com/securet-flow/ssc.git
-cd ssc
-```
+# Clone o repositório
+git clone https://github.com/seu-usuario/securet-flow-ssc.git
+cd securet-flow-ssc
 
-### 2. Configure as Variáveis de Ambiente
-```bash
+# Configure as variáveis de ambiente
 cp .env.example .env
-# Edite .env com suas configurações
-```
+# Edite o arquivo .env com suas configurações
 
-### 3. Execute com Docker Compose
-```bash
-# Build e start de todos os serviços
+# Inicie o sistema
 docker-compose up -d
 
-# Verificar status
-docker-compose ps
-
-# Ver logs
-docker-compose logs -f
+# Acesse a aplicação
+# Frontend: http://localhost:3000
+# Backend API: http://localhost:8000
+# Documentação API: http://localhost:8000/docs
 ```
 
-### 4. Acesse o Sistema
-- **Dashboard Principal**: http://localhost:3000
-- **API Backend**: http://localhost:8000
-- **Godofreda IA**: http://localhost:3001
-- **Ollama**: http://localhost:11434
+### **Configuração Manual**
 
-## 🔐 Credenciais de Acesso
-
-### Dashboard Principal
-- **Email**: `admin@securet-flow.com`
-- **Senha**: `admin123`
-
-## 🎯 Funcionalidades Principais
-
-### 🔍 **Análise de Vulnerabilidades**
-- **130+ Ferramentas** integradas (Nmap, Metasploit, OWASP ZAP, Nuclei, etc.)
-- **Scans Automatizados** com agendamento inteligente
-- **Análise de Resultados** com IA avançada
-- **Relatórios Detalhados** em múltiplos formatos
-- **Detecção de Falsos Positivos** com machine learning
-
-### 🤖 **IA Multimodal (Godofreda)**
-- **Módulo Opcional** que pode ser ativado/desativado
-- **Chat Inteligente** com personalidade sarcástica
-- **Síntese de Voz** avançada (TTS)
-- **Análise de Imagens** e documentos
-- **Contexto Persistente** de conversas
-- **Integração Total** com o Securet Flow
-- **Controle via Frontend** nas configurações
-
-### 📊 **Dashboard Unificado**
-- **Métricas em Tempo Real** de segurança
-- **Gráficos Interativos** com Chart.js
-- **Alertas Inteligentes** com notificações
-- **Interface Responsiva** para todos os dispositivos
-- **Tema Escuro/Claro** personalizável
-
-### 🔐 **Segurança Básica**
-- **Autenticação simples** com sessões
-- **Logs de auditoria** básicos
-
-### 📈 **Monitoramento Simplificado**
-- **Logs estruturados** básicos
-- **Métricas simples** de performance
-
-## 🛠️ Tecnologias Utilizadas
-
-### Frontend
-- **React 18** com TypeScript
-- **Tailwind CSS** para estilização
-- **Framer Motion** para animações
-- **Chart.js** para gráficos
-- **Zustand** para gerenciamento de estado
-- **React Router** para navegação
-- **React Query** para cache de dados
-
-### Backend
-- **FastAPI** para APIs de alta performance
-- **SQLAlchemy 2.0** com Alembic
-- **Redis** para cache e sessões
-- **Autenticação simples** com sessões
-- **pytest** para testes
-- **Pydantic** para validação de dados
-
-### IA e Machine Learning
-- **Ollama** para LLMs locais
-- **Coqui TTS** para síntese de voz
-- **scikit-learn** para ML
-- **spaCy** para NLP
-- **pgvector** para embeddings
-
-### Infraestrutura
-- **PostgreSQL 16** como database principal
-- **Redis 7** para cache e sessões
-- **Docker** e **Kubernetes**
-- **Logs estruturados** básicos
-
-## 📁 Estrutura do Projeto
-
-```
-securet-flow-ssc/
-├── 📖 docs/                    # Documentação completa
-│   ├── api/                   # Especificações da API
-│   ├── deployment/            # Guias de deploy
-│   ├── development/           # Guias de desenvolvimento
-│   ├── config/                # Configurações
-│   ├── tools/                 # Arsenal de ferramentas
-│   └── roadmaps/              # Roadmaps e planejamento
-├── 🎨 src/frontend/            # Frontend React
-│   ├── src/
-│   │   ├── components/        # Componentes reutilizáveis
-│   │   ├── pages/             # Páginas do sistema
-│   │   ├── stores/            # Gerenciamento de estado
-│   │   ├── services/          # Serviços de API
-│   │   ├── hooks/             # Custom hooks
-│   │   ├── utils/             # Utilitários
-│   │   └── types/             # Tipos TypeScript
-│   └── package.json
-├── 🔧 src/backend/             # Backend FastAPI
-│   ├── app/
-│   │   ├── api/               # Endpoints da API
-│   │   ├── core/              # Configurações core
-│   │   ├── models/            # Modelos de dados
-│   │   ├── services/          # Lógica de negócio
-│   │   └── utils/             # Utilitários
-│   └── requirements.txt
-├── 🤖 src/ai/godofreda/        # Módulo Godofreda (opcional)
-│   ├── backend/              # Backend da Godofreda
-│   ├── llm/                  # LLM da Godofreda
-│   └── config.py            # Configuração do módulo
-├── 🛠️ src/tools/              # Ferramentas de segurança
-├── 🐳 docker/                  # Configurações Docker
-│   ├── docker-compose.yml    # Orquestração principal
-│   ├── docker-compose.dev.yml # Desenvolvimento
-│   └── docker-compose.prod.yml # Produção
-├── 📊 monitoring/              # Monitoramento simplificado
-│   └── logs/                 # Configurações de logs básicos
-└── 🚀 scripts/                 # Scripts de automação
-    ├── setup.sh              # Setup inicial
-    ├── deploy.sh             # Deploy automatizado
-    └── backup.sh             # Backup automático
-```
-
-## 🚀 Scripts Disponíveis
-
-### Desenvolvimento
 ```bash
-# Frontend
-cd src/frontend
-npm install
-npm run dev
-
 # Backend
 cd src/backend
 pip install -r requirements.txt
 uvicorn app.main:app --reload
 
-# Godofreda (opcional)
-cd src/ai/godofreda
-docker-compose up -d
-```
-
-### Produção
-```bash
-# Deploy completo
-./scripts/deploy.sh
-
-# Backup automático
-./scripts/backup.sh
-```
-
-### Testes
-```bash
 # Frontend
 cd src/frontend
-npm run test
-npm run test:coverage
-
-# Backend
-cd src/backend
-pytest tests/ -v --cov=app
-
-# Godofreda (opcional)
-cd src/ai/godofreda
-pytest tests/ -v
+npm install
+npm run dev
 ```
 
-## 🔧 Configuração Avançada
+## ⚙️ **Configuração**
 
-### Variáveis de Ambiente Principais
+### **Variáveis de Ambiente**
+
+Crie um arquivo `.env` na raiz do projeto:
 
 ```env
-# API Configuration
-API_HOST=0.0.0.0
-API_PORT=8000
-DEBUG=false
-LOG_LEVEL=info
-
 # Database
-DATABASE_URL=postgresql://user:pass@localhost/securet_flow
-REDIS_URL=redis://localhost:6379
-ELASTICSEARCH_URL=http://localhost:9200
+POSTGRES_DB=securetflow
+POSTGRES_USER=securetflow
+POSTGRES_PASSWORD=sua_senha_segura
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
 
-# AI Services
-OLLAMA_BASE_URL=http://localhost:11434
-OLLAMA_MODEL=llama3.2:3b
-OPENAI_API_KEY=your_openai_key
+# Redis
+REDIS_HOST=redis
+REDIS_PORT=6379
 
-# Security
-SESSION_SECRET_KEY=your_session_secret
+# JWT
+JWT_SECRET_KEY=sua_chave_secreta_muito_segura
+JWT_ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
 
-# Logging
-LOG_LEVEL=info
+# CORS
+CORS_ORIGINS=["http://localhost:3000", "http://localhost:80"]
+
+# Debug
+DEBUG=true
 ```
 
-### Personalização de Tema
+### **Portas Utilizadas**
+- **3000** - Frontend (React)
+- **8000** - Backend (FastAPI)
+- **5432** - PostgreSQL
+- **6379** - Redis
+- **80** - Nginx (Proxy)
 
-Edite `src/frontend/tailwind.config.js` para personalizar cores e estilos:
+## 🎯 **Uso**
 
-```javascript
-module.exports = {
-  theme: {
-    extend: {
-      colors: {
-        primary: {
-          50: '#eff6ff',
-          500: '#3b82f6',
-          900: '#1e3a8a',
-        },
-        security: {
-          low: '#10b981',
-          medium: '#f59e0b',
-          high: '#ef4444',
-          critical: '#7c2d12',
-        }
-      }
-    }
-  }
-}
+### **Primeiro Acesso**
+
+1. Acesse `http://localhost:3000`
+2. Clique em "Registrar" para criar uma conta
+3. Faça login com suas credenciais
+4. Comece criando seus primeiros targets
+
+### **Funcionalidades Principais**
+
+#### **Dashboard**
+- Visualize métricas em tempo real
+- Acompanhe scans ativos
+- Monitore vulnerabilidades
+- Acesse ações rápidas
+
+#### **Targets**
+- Adicione novos alvos para scan
+- Configure protocolos (HTTP, HTTPS, SSH)
+- Gerencie portas e descrições
+- Organize por categorias
+
+#### **Scans**
+- Execute scans automatizados
+- Monitore progresso em tempo real
+- Visualize resultados detalhados
+- Exporte relatórios
+
+#### **Vulnerabilities**
+- Analise findings por severidade
+- Acompanhe tendências
+- Gere relatórios de compliance
+- Integre com ferramentas externas
+
+## 🔌 **API**
+
+### **Endpoints Principais**
+
+#### **Autenticação**
+```http
+POST /auth/register    # Registrar usuário
+POST /auth/login       # Login
+GET  /auth/me          # Perfil do usuário
+POST /auth/logout      # Logout
 ```
 
-## 📊 Monitoramento Simplificado
+#### **Dashboard**
+```http
+GET /dashboard/stats   # Estatísticas do dashboard
+```
 
-### Logs Disponíveis
+#### **Targets**
+```http
+GET    /targets/       # Listar targets
+POST   /targets/       # Criar target
+GET    /targets/{id}   # Obter target
+PUT    /targets/{id}   # Atualizar target
+DELETE /targets/{id}   # Deletar target
+```
 
-- **API Logs**: Requisições e respostas da API
-- **Scan Logs**: Logs de execução dos scans
-- **AI Logs**: Interações com serviços de IA
-- **System Logs**: Logs do sistema e containers
+#### **Scans**
+```http
+GET    /scans/         # Listar scans
+POST   /scans/         # Criar scan
+GET    /scans/{id}     # Obter scan
+PUT    /scans/{id}     # Atualizar scan
+DELETE /scans/{id}     # Deletar scan
+POST   /scans/{id}/start  # Iniciar scan
+POST   /scans/{id}/stop   # Parar scan
+```
 
-### Visualização de Logs
-
-Use `docker-compose logs` para visualizar logs em tempo real:
+### **Exemplo de Uso da API**
 
 ```bash
-# Todos os logs
-docker-compose logs -f
+# Login
+curl -X POST "http://localhost:8000/auth/login" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "username=admin&password=senha123"
 
-# Logs específicos
-docker-compose logs -f backend
-docker-compose logs -f godofreda
+# Criar target
+curl -X POST "http://localhost:8000/targets/" \
+  -H "Authorization: Bearer SEU_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Exemplo.com",
+    "host": "exemplo.com",
+    "protocol": "https",
+    "port": 443,
+    "description": "Site de exemplo"
+  }'
 ```
 
-## 🧪 Testes e Qualidade
+## 🏗️ **Arquitetura**
 
-### Cobertura de Testes
-
-```bash
-# Frontend (React)
-npm run test:coverage
-# Cobertura: >90%
-
-# Backend (FastAPI)
-pytest --cov=app --cov-report=html
-# Cobertura: >85%
-
-# Godofreda (opcional)
-pytest --cov=app --cov-report=html
-# Cobertura: >80%
+### **Estrutura do Projeto**
+```
+securetflow/
+├── src/
+│   ├── backend/           # API FastAPI
+│   │   ├── app/
+│   │   │   ├── api/       # Endpoints
+│   │   │   ├── core/      # Configurações
+│   │   │   ├── models/    # Modelos SQLAlchemy
+│   │   │   └── schemas/   # Schemas Pydantic
+│   │   └── requirements.txt
+│   └── frontend/          # Aplicação React
+│       ├── src/
+│       │   ├── components/ # Componentes UI
+│       │   ├── pages/      # Páginas
+│       │   ├── stores/     # Zustand stores
+│       │   └── services/   # Serviços API
+│       └── package.json
+├── docker-compose.yml     # Orquestração Docker
+├── nginx.conf            # Configuração Nginx
+└── README.md
 ```
 
-### Linting e Formatação
+### **Fluxo de Dados**
+```
+Frontend (React) ↔ API (FastAPI) ↔ Database (PostgreSQL)
+                              ↕
+                         Cache (Redis)
+```
 
+### **Segurança**
+- **JWT Authentication** - Tokens seguros
+- **CORS Protection** - Controle de origens
+- **Input Validation** - Validação de dados
+- **SQL Injection Protection** - ORM seguro
+- **XSS Protection** - Headers de segurança
+
+## 🔒 **Segurança**
+
+### **Medidas Implementadas**
+- ✅ Autenticação JWT
+- ✅ Hash de senhas (bcrypt)
+- ✅ Validação de entrada
+- ✅ Headers de segurança
+- ✅ CORS configurado
+- ✅ Rate limiting
+- ✅ Logs de auditoria
+
+### **Boas Práticas**
+- Sempre use HTTPS em produção
+- Mantenha dependências atualizadas
+- Monitore logs regularmente
+- Faça backups do banco de dados
+- Use senhas fortes
+
+## 🧪 **Testes**
+
+### **Executar Testes**
 ```bash
-# Frontend
-npm run lint
-npm run format
-
 # Backend
-black app/
-flake8 app/
-isort app/
+cd src/backend
+pytest
+
+# Frontend
+cd src/frontend
+npm test
 ```
 
-## 🚀 Deploy em Produção
+### **Cobertura de Testes**
+- ✅ Testes de autenticação
+- ✅ Testes de API
+- ✅ Testes de componentes
+- ✅ Testes de integração
 
-### Docker Compose (Recomendado)
+## 🚀 **Deploy**
 
+### **Produção**
 ```bash
-# Deploy completo
-docker-compose -f docker/docker-compose.prod.yml up -d
+# Build das imagens
+docker-compose -f docker-compose.prod.yml build
 
-# Verificar status
-docker-compose ps
-
-# Logs
-docker-compose logs -f
+# Deploy
+docker-compose -f docker-compose.prod.yml up -d
 ```
 
-### Kubernetes
+### **Monitoramento**
+- Logs estruturados
+- Métricas de performance
+- Health checks
+- Alertas automáticos
 
-```bash
-# Aplicar manifests
-kubectl apply -f k8s/
+## 🤝 **Contribuição**
 
-# Verificar status
-kubectl get pods -n securet-flow
+### **Como Contribuir**
+1. Fork o projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
 
-# Acessar serviços
-kubectl port-forward svc/securet-frontend 3000:80
-```
+### **Padrões de Código**
+- Use TypeScript no frontend
+- Siga PEP 8 no Python
+- Documente funções e classes
+- Escreva testes para novas funcionalidades
 
-### Cloud Providers
+## 📊 **Status do Projeto**
 
-- **AWS**: ECS/EKS com ALB
-- **Azure**: AKS com Application Gateway
-- **GCP**: GKE com Cloud Load Balancer
-- **DigitalOcean**: Kubernetes com Load Balancer
+### **Funcionalidades Implementadas**
+- ✅ Dashboard interativo
+- ✅ Gerenciamento de targets
+- ✅ Sistema de scans
+- ✅ Autenticação JWT
+- ✅ API RESTful
+- ✅ Interface responsiva
+- ✅ Documentação completa
 
-## 🤝 Contribuição
+### **Próximas Funcionalidades**
+- 🔄 Integração com ferramentas externas
+- 🔄 Relatórios avançados
+- 🔄 Automação de workflows
+- 🔄 Machine Learning para detecção
 
-1. **Fork** o projeto
-2. **Crie** uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. **Commit** suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. **Push** para a branch (`git push origin feature/AmazingFeature`)
-5. **Abra** um Pull Request
+## 📞 **Suporte**
 
-### Padrões de Código
+### **Canais de Ajuda**
+- 📧 Email: suporte@securet-flow.com
+- 💬 Discord: [Link do servidor]
+- 📖 Documentação: [Link da docs]
+- 🐛 Issues: [GitHub Issues]
 
-- **Frontend**: ESLint + Prettier + TypeScript strict
-- **Backend**: Black + Flake8 + isort + mypy
-- **IA**: Pytest + coverage + type hints
-- **Documentação**: Markdown + OpenAPI/Swagger
+### **FAQ**
+**Q: Como resetar a senha?**
+A: Use o endpoint `/auth/reset-password`
 
-## 📝 Licença
+**Q: Como adicionar novos tipos de scan?**
+A: Configure no arquivo de configuração do backend
+
+**Q: Como fazer backup do banco?**
+A: Use `docker-compose exec postgres pg_dump`
+
+## 📄 **Licença**
 
 Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
 
-## 🙏 Agradecimentos
+## 🙏 **Agradecimentos**
 
-- [FastAPI](https://fastapi.tiangolo.com/) - Framework web moderno
-- [React](https://reactjs.org/) - Interface web
-- [Ollama](https://ollama.ai/) - LLMs locais
-- [Coqui TTS](https://github.com/coqui-ai/TTS) - Síntese de voz
-- [Tailwind CSS](https://tailwindcss.com/) - Framework CSS
-- [Docker](https://www.docker.com/) - Containerização
-
-## 📞 Suporte
-
-- **Issues**: [GitHub Issues](https://github.com/securet-flow/ssc/issues)
-- **Documentação**: [docs/](docs/)
-- **Email**: support@securet-flow.com
-- **Discord**: [Servidor da Comunidade](https://discord.gg/securet-flow)
+- FastAPI pela excelente documentação
+- React pela framework incrível
+- Tailwind CSS pelo design system
+- Comunidade open source
 
 ---
 
 **Desenvolvido com ❤️ pela equipe Securet Flow SSC**
 
-> **Status**: ✅ **Arquitetura Limpa e Focada**
-> 
-> - **Securet Flow** como sistema principal
-> - **Godofreda** como módulo opcional integrado
-> - Interface unificada e moderna
-> - Controle total via frontend
-> - Sem código desnecessário
-> - Pronto para produção 
+[![GitHub stars](https://img.shields.io/github/stars/seu-usuario/securet-flow-ssc?style=social)](https://github.com/seu-usuario/securet-flow-ssc)
+[![GitHub forks](https://img.shields.io/github/forks/seu-usuario/securet-flow-ssc?style=social)](https://github.com/seu-usuario/securet-flow-ssc)
+[![GitHub issues](https://img.shields.io/github/issues/seu-usuario/securet-flow-ssc)](https://github.com/seu-usuario/securet-flow-ssc/issues) 

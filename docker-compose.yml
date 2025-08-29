@@ -1,92 +1,16 @@
 services:
-  # Frontend Principal
-  frontend:
-    build:
-      context: ./src/frontend
-      dockerfile: Dockerfile
-    ports:
-      - "3000:80"
-    environment:
-      - VITE_API_URL=http://localhost:8000
-      - VITE_GODFREDA_URL=http://localhost:3001
-    depends_on:
-      - backend
-    networks:
-      - securet-network
-    restart: unless-stopped
-
-  # Backend Principal
-  backend:
-    build:
-      context: ./src/backend
-      dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
-    environment:
-      - DATABASE_URL=postgresql://securet_user:securet_pass@postgres:5432/securet_flow
-      - REDIS_URL=redis://redis:6379
-      - JWT_SECRET_KEY=your_super_secret_jwt_key_here
-      - JWT_ALGORITHM=HS256
-      - JWT_EXPIRATION=3600
-      - OLLAMA_BASE_URL=http://ollama:11434
-      - OLLAMA_MODEL=llama3.2:3b
-    depends_on:
-      - postgres
-      - redis
-      - ollama
-    volumes:
-      - ./src/backend:/app
-      - backend_data:/app/data
-    networks:
-      - securet-network
-    restart: unless-stopped
-
-  # Godofreda IA (Opcional)
-  godofreda:
-    build:
-      context: ./src/ai/godofreda
-      dockerfile: Dockerfile
-    ports:
-      - "3001:8000"
-    environment:
-      - API_HOST=0.0.0.0
-      - API_PORT=8000
-      - OLLAMA_BASE_URL=http://ollama:11434
-      - OLLAMA_MODEL=llama3.2:3b
-      - REDIS_URL=redis://redis:6379
-    depends_on:
-      - ollama
-      - redis
-    volumes:
-      - ./src/ai/godofreda/app/tts_temp:/app/app/tts_temp
-      - ./src/ai/godofreda/app/tts_models:/app/app/tts_models
-      - godofreda_data:/app/data
-    networks:
-      - securet-network
-    restart: unless-stopped
-
-  # Ollama LLM
-  ollama:
-    image: ollama/ollama:latest
-    ports:
-      - "11434:11434"
-    volumes:
-      - ollama_data:/root/.ollama
-    networks:
-      - securet-network
-    restart: unless-stopped
-
   # PostgreSQL Database
   postgres:
-    image: postgres:16-alpine
+    image: postgres:15
+    container_name: securetflow-postgres
     environment:
-      - POSTGRES_DB=securet_flow
-      - POSTGRES_USER=securet_user
-      - POSTGRES_PASSWORD=securet_pass
-    ports:
-      - "5432:5432"
+      POSTGRES_DB: securet_flow
+      POSTGRES_USER: securet_user
+      POSTGRES_PASSWORD: securet_password
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
     networks:
       - securet-network
     restart: unless-stopped
@@ -94,20 +18,71 @@ services:
   # Redis Cache
   redis:
     image: redis:7-alpine
+    container_name: securetflow-redis
     ports:
       - "6379:6379"
+    networks:
+      - securet-network
+    restart: unless-stopped
+
+  # Backend API
+  backend:
+    build:
+      context: ./src/backend
+      dockerfile: Dockerfile
+    container_name: securetflow-backend
+    environment:
+      - DATABASE_URL=postgresql://securet_user:securet_password@postgres:5432/securet_flow
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - DEBUG=${DEBUG}
+    depends_on:
+      postgres:
+        condition: service_started
+      redis:
+        condition: service_started
+    ports:
+      - "8000:8000"
     volumes:
-      - redis_data:/data
+      - ./src/backend:/app
+    networks:
+      - securet-network
+    restart: unless-stopped
+
+  # Frontend
+  frontend:
+    build:
+      context: ./src/frontend
+      dockerfile: Dockerfile
+    container_name: securetflow-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    depends_on:
+      - backend
+    networks:
+      - securet-network
+    restart: unless-stopped
+
+  # Nginx (Reverse Proxy)
+  nginx:
+    image: nginx:alpine
+    container_name: securetflow-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - backend
+      - frontend
     networks:
       - securet-network
     restart: unless-stopped
 
 volumes:
   postgres_data:
-  redis_data:
-  backend_data:
-  godofreda_data:
-  ollama_data:
 
 networks:
   securet-network:

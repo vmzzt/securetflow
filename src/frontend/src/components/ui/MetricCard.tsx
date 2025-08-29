@@ -1,75 +1,77 @@
 import React from 'react';
-import { motion } from 'framer-motion';
-import { clsx } from 'clsx';
 
-export interface MetricCardProps {
+interface MetricCardProps {
   title: string;
-  value: string | number;
+  value: number | string;
   change?: string;
   changeType?: 'positive' | 'negative' | 'neutral';
   icon?: string;
-  delay?: number;
   className?: string;
 }
 
-const MetricCard: React.FC<MetricCardProps> = ({
+export const MetricCard: React.FC<MetricCardProps> = ({
   title,
   value,
   change,
   changeType = 'neutral',
   icon,
-  delay = 0,
-  className
+  className = ''
 }) => {
-  const changeClasses = {
-    positive: 'text-green-600',
-    negative: 'text-red-600',
-    neutral: 'text-gray-600'
+  const getChangeColor = () => {
+    switch (changeType) {
+      case 'positive':
+        return 'text-green-600';
+      case 'negative':
+        return 'text-red-600';
+      default:
+        return 'text-gray-600';
+    }
   };
-  
-  const changeIcon = {
-    positive: '↗️',
-    negative: '↘️',
-    neutral: '→'
+
+  const getChangeIcon = () => {
+    switch (changeType) {
+      case 'positive':
+        return '↗';
+      case 'negative':
+        return '↘';
+      default:
+        return '→';
+    }
   };
-  
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay }}
-      className={clsx(
-        'bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow',
-        className
-      )}
-    >
-      <div className="flex items-center justify-between">
-        <div className="flex-1">
-          <p className="text-sm font-medium text-gray-600 mb-1">
-            {title}
-          </p>
-          <p className="text-2xl font-bold text-gray-900">
-            {value}
-          </p>
-          {change && (
-            <div className="flex items-center mt-2">
-              <span className={clsx('text-sm font-medium', changeClasses[changeType])}>
-                {changeIcon[changeType]} {change}
-              </span>
+    <div className={`bg-white overflow-hidden shadow rounded-lg ${className}`}>
+      <div className="p-5">
+        <div className="flex items-center">
+          {icon && (
+            <div className="flex-shrink-0">
+              <div className="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center">
+                <span className="text-white text-sm font-medium">
+                  {icon}
+                </span>
+              </div>
             </div>
           )}
-        </div>
-        
-        {icon && (
-          <div className="flex-shrink-0 ml-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100 text-2xl">
-              {icon}
-            </div>
+          <div className="ml-5 w-0 flex-1">
+            <dl>
+              <dt className="text-sm font-medium text-gray-500 truncate">
+                {title}
+              </dt>
+              <dd className="flex items-baseline">
+                <div className="text-2xl font-semibold text-gray-900">
+                  {value}
+                </div>
+                {change && (
+                  <div className={`ml-2 flex items-baseline text-sm font-semibold ${getChangeColor()}`}>
+                    <span className="mr-1">{getChangeIcon()}</span>
+                    {change}
+                  </div>
+                )}
+              </dd>
+            </dl>
           </div>
-        )}
+        </div>
       </div>
-    </motion.div>
+    </div>
   );
-};
-
-export default MetricCard; 
+}; 

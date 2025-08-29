@@ -1,152 +1,153 @@
 # Securet Flow SSC - Frontend
 
-Frontend moderno e responsivo para o sistema Securet Flow SSC, construído com React, TypeScript, Tailwind CSS e Vite.
+Frontend da aplicação Securet Flow SSC, uma plataforma de segurança e compliance.
 
 ## 🚀 Tecnologias
 
-- **React 18** - Biblioteca para interfaces de usuário
-- **TypeScript** - Tipagem estática para JavaScript
-- **Tailwind CSS** - Framework CSS utilitário
+- **React 18** - Biblioteca de UI
+- **TypeScript** - Tipagem estática
 - **Vite** - Build tool e dev server
-- **React Router DOM** - Roteamento
+- **Tailwind CSS** - Framework CSS
+- **React Router** - Roteamento
 - **Zustand** - Gerenciamento de estado
+- **React Query** - Cache e sincronização de dados
+- **Axios** - Cliente HTTP
 - **Framer Motion** - Animações
-- **Heroicons** - Ícones
-- **Chart.js** - Gráficos
-- **React Query** - Gerenciamento de dados
+- **Vitest** - Testes unitários
 
 ## 📦 Instalação
 
-1. **Instalar dependências:**
-   ```bash
-   pnpm install
-   ```
+```bash
+# Instalar dependências
+npm install
 
-2. **Configurar variáveis de ambiente:**
-   ```bash
-   cp .env.example .env.local
-   ```
+# Configurar variáveis de ambiente
+cp .env.example .env
+```
 
-3. **Iniciar servidor de desenvolvimento:**
-   ```bash
-   pnpm dev
-   ```
+## 🛠️ Desenvolvimento
 
-## 🛠️ Scripts Disponíveis
+```bash
+# Iniciar servidor de desenvolvimento
+npm run dev
 
-- `pnpm dev` - Inicia o servidor de desenvolvimento
-- `pnpm build` - Gera build de produção
-- `pnpm preview` - Visualiza o build de produção
-- `pnpm test` - Executa os testes
-- `pnpm test:ui` - Executa os testes com interface
-- `pnpm test:coverage` - Executa os testes com cobertura
-- `pnpm lint` - Executa o linter
-- `pnpm lint:fix` - Corrige problemas do linter
-- `pnpm format` - Formata o código
-- `pnpm type-check` - Verifica tipos TypeScript
+# Verificar tipos TypeScript
+npm run type-check
 
-## 🏗️ Estrutura do Projeto
+# Executar linting
+npm run lint
+
+# Formatar código
+npm run format
+
+# Executar testes
+npm run test
+```
+
+## 🏗️ Build
+
+```bash
+# Build para produção
+npm run build
+
+# Preview do build
+npm run preview
+```
+
+## 🐳 Docker
+
+```bash
+# Build da imagem
+docker build -t securet-flow-frontend .
+
+# Executar container
+docker run -p 80:80 securet-flow-frontend
+```
+
+## 📁 Estrutura do Projeto
 
 ```
 src/
-├── components/          # Componentes reutilizáveis
-│   ├── ui/             # Componentes de UI base
-│   └── layout/         # Componentes de layout
-├── pages/              # Páginas da aplicação
-├── stores/             # Stores Zustand
-├── services/           # Serviços e APIs
-├── hooks/              # Custom hooks
-├── utils/              # Utilitários
-├── types/              # Definições de tipos
-├── styles/             # Estilos globais
-└── tests/              # Testes
+├── components/     # Componentes reutilizáveis
+├── pages/         # Páginas da aplicação
+├── hooks/         # Custom hooks
+├── stores/        # Gerenciamento de estado (Zustand)
+├── services/      # Serviços de API
+├── utils/         # Utilitários
+├── types/         # Definições de tipos
+├── config/        # Configurações
+├── styles/        # Estilos globais
+└── tests/         # Testes
 ```
-
-## 🎨 Tema e Estilização
-
-O projeto utiliza Tailwind CSS com tema personalizado e suporte a modo escuro. As variáveis CSS estão definidas em `src/styles/globals.css`.
-
-### Cores Principais
-- **Primary**: Azul (#3b82f6)
-- **Secondary**: Cinza (#6b7280)
-- **Success**: Verde (#10b981)
-- **Warning**: Amarelo (#f59e0b)
-- **Danger**: Vermelho (#ef4444)
 
 ## 🔧 Configuração
 
-### Vite
-Configuração em `vite.config.ts` com:
-- Aliases para imports
-- Proxy para API
-- Build optimization
-- Test configuration
+### Variáveis de Ambiente
 
-### TypeScript
-Configuração em `tsconfig.json` com:
-- Path mapping
-- Strict mode
-- Modern ES features
+```env
+VITE_API_URL=http://localhost:8000
+VITE_APP_NAME=Securet Flow SSC
+VITE_APP_VERSION=1.0.0
+VITE_DEBUG=false
+VITE_ENABLE_ANALYTICS=false
+```
 
-### ESLint & Prettier
-- ESLint para linting
-- Prettier para formatação
-- Regras personalizadas para React/TypeScript
+### Scripts Disponíveis
 
-## 📱 Responsividade
-
-O frontend é totalmente responsivo com breakpoints:
-- **Mobile**: < 640px
-- **Tablet**: 640px - 1024px
-- **Desktop**: > 1024px
-
-## 🌙 Modo Escuro
-
-Suporte completo a modo escuro com:
-- Toggle automático
-- Persistência de preferência
-- Transições suaves
-
-## 📊 Componentes de Gráficos
-
-Utiliza Chart.js para visualizações:
-- Gráficos de linha
-- Gráficos de barras
-- Gráficos de rosca
-- Gráficos de área
-
-## 🔐 Autenticação
-
-Sistema de autenticação com:
-- JWT tokens
-- Refresh tokens
-- Proteção de rotas
-- Gerenciamento de sessão
+- `npm run dev` - Servidor de desenvolvimento
+- `npm run build` - Build para produção
+- `npm run preview` - Preview do build
+- `npm run test` - Executar testes
+- `npm run lint` - Verificar código
+- `npm run format` - Formatar código
+- `npm run type-check` - Verificar tipos
 
 ## 🧪 Testes
 
-Testes com Vitest e Testing Library:
-- Testes unitários
-- Testes de integração
-- Testes de componentes
-- Cobertura de código
-
-## 📦 Build e Deploy
-
-### Build de Produção
 ```bash
-pnpm build
+# Executar todos os testes
+npm run test
+
+# Executar testes com UI
+npm run test:ui
+
+# Executar testes com coverage
+npm run test:coverage
 ```
 
-### Deploy
-O build gera arquivos estáticos em `dist/` que podem ser servidos por qualquer servidor web.
+## 📝 Convenções
+
+### Nomenclatura
+
+- **Componentes**: PascalCase (ex: `UserProfile.tsx`)
+- **Hooks**: camelCase com prefixo `use` (ex: `useAuth.ts`)
+- **Utilitários**: camelCase (ex: `formatDate.ts`)
+- **Tipos**: PascalCase (ex: `User.ts`)
+
+### Estrutura de Componentes
+
+```tsx
+import React from 'react';
+
+interface ComponentProps {
+  // Props aqui
+}
+
+export const Component: React.FC<ComponentProps> = ({ /* props */ }) => {
+  // Lógica aqui
+  
+  return (
+    // JSX aqui
+  );
+};
+```
 
 ## 🤝 Contribuição
 
 1. Fork o projeto
-2. Crie uma branch para sua feature
-3. Commit suas mudanças
-4. Push para a branch
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
 5. Abra um Pull Request
 
 ## 📄 Licença
@@ -155,4 +156,4 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](../LICENSE) para
 
 ## 🆘 Suporte
 
-Para suporte, entre em contato com a equipe Securet Flow SSC ou abra uma issue no repositório. 
+Para suporte, envie um email para suporte@securetflow.com ou abra uma issue no repositório. 

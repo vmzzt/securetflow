@@ -5,48 +5,51 @@
 /* Base styles */
 @layer base {
   html {
-    scroll-behavior: smooth;
+    font-family: 'Inter', system-ui, sans-serif;
   }
   
   body {
-    @apply bg-gray-50 text-gray-900;
-    font-feature-settings: 'rlig' 1, 'calt' 1;
+    @apply bg-gray-50 text-gray-900 antialiased;
+  }
+  
+  * {
+    @apply border-gray-200;
   }
 }
 
 /* Component styles */
 @layer components {
+  .btn {
+    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none;
+  }
+  
   .btn-primary {
-    @apply bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors;
+    @apply bg-blue-600 text-white hover:bg-blue-700;
   }
   
   .btn-secondary {
-    @apply bg-gray-200 text-gray-900 px-4 py-2 rounded-lg font-medium hover:bg-gray-300 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors;
+    @apply bg-gray-100 text-gray-900 hover:bg-gray-200;
   }
   
-  .input {
-    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+  .btn-danger {
+    @apply bg-red-600 text-white hover:bg-red-700;
   }
   
   .card {
     @apply bg-white rounded-lg border border-gray-200 shadow-sm;
   }
   
-  .sidebar-item {
-    @apply flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors;
-  }
-  
-  .sidebar-item-active {
-    @apply bg-blue-100 text-blue-700;
-  }
-  
-  .sidebar-item-inactive {
-    @apply text-gray-600 hover:bg-gray-100 hover:text-gray-900;
+  .input {
+    @apply flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
   }
 }
 
 /* Utility styles */
 @layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -54,10 +57,6 @@
   
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
-  }
-  
-  .text-balance {
-    text-wrap: balance;
   }
 }
 
@@ -89,11 +88,6 @@
     transform: translateY(0);
     animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
   }
-}
-
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  /* Dark mode styles will be added later */
 }
 
 /* Print styles */

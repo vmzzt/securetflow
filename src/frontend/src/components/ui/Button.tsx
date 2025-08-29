@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link' | 'success' | 'warning' | 'info';
@@ -37,20 +36,14 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const classes = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`;
 
     return (
-      <motion.button
+      <button
         className={classes}
         ref={ref}
         disabled={isDisabled}
-        whileHover={!isDisabled ? { scale: 1.02 } : undefined}
-        whileTap={!isDisabled ? { scale: 0.98 } : undefined}
         {...props}
       >
         {loading && (
-          <motion.div
-            className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-          />
+          <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
         )}
         {!loading && leftIcon && (
           <span className="mr-2">{leftIcon}</span>
@@ -59,11 +52,12 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {rightIcon && (
           <span className="ml-2">{rightIcon}</span>
         )}
-      </motion.button>
+      </button>
     );
   }
 );
 
 Button.displayName = 'Button';
 
-export { Button }; 
+export { Button };
+export default Button; 

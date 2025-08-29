@@ -1,5 +1,4 @@
 import React, { forwardRef } from 'react';
-import { clsx } from 'clsx';
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -25,14 +24,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     const iconClasses = leftIcon ? 'pl-10' : rightIcon ? 'pr-10' : '';
     const widthClass = fullWidth ? 'w-full' : '';
     
-    const classes = clsx(
-      baseClasses,
-      variantClasses[variant],
-      errorClasses,
-      iconClasses,
-      widthClass,
-      className
-    );
+    const classes = `${baseClasses} ${variantClasses[variant]} ${errorClasses} ${iconClasses} ${widthClass} ${className || ''}`.trim();
     
     return (
       <div className={fullWidth ? 'w-full' : ''}>

@@ -1,9 +1,6 @@
-// UI Components
-export { Card } from './ui/Card';
-export { MetricCard } from './ui/MetricCard';
-
-// Chart Components
-export { VulnerabilityChart } from './charts/VulnerabilityChart';
-
-// Dashboard Components
-export { RecentScans } from './Dashboard/RecentScans'; 
+// Centralized component exports
+export { default as Layout } from './layout/Layout';
+export { default as LoadingSpinner } from './ui/LoadingSpinner';
+export { default as Button } from './ui/Button';
+export { default as Card } from './ui/Card';
+export { default as Input } from './ui/Input'; 

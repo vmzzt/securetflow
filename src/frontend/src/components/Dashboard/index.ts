@@ -1,1 +1,0 @@
-export { RecentScans } from './RecentScans'; 

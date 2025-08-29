@@ -29,12 +29,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       {isOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="fixed inset-0 bg-gray-600 bg-opacity-75" onClick={onClose}></div>
-          <div className="fixed inset-y-0 left-0 flex w-64 flex-col bg-white">
-            <div className="flex h-16 items-center justify-between px-4 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900">Securet Flow</h2>
+          <div className="fixed inset-y-0 left-0 flex w-64 flex-col bg-white dark:bg-gray-800">
+            <div className="flex h-16 items-center justify-between px-4 border-b border-gray-200 dark:border-gray-700">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Securet Flow</h2>
               <button
                 onClick={onClose}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
               >
                 <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -48,10 +48,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                   key={item.name}
                   to={item.href}
                   className={({ isActive }) =>
-                    `group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
+                    `group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors ${
                       isActive
-                        ? 'bg-blue-100 text-blue-900'
-                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                        ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100'
+                        : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'
                     }`
                   }
                   onClick={onClose}
@@ -63,16 +63,16 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 </NavLink>
               ))}
               
-              <div className="pt-4 border-t border-gray-200">
+              <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
                 {secondaryNavigation.map((item) => (
                   <NavLink
                     key={item.name}
                     to={item.href}
                     className={({ isActive }) =>
-                      `group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
+                      `group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors ${
                         isActive
-                          ? 'bg-blue-100 text-blue-900'
-                          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                          ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100'
+                          : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'
                       }`
                     }
                     onClick={onClose}
@@ -91,9 +91,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
       {/* Desktop sidebar */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
-        <div className="flex flex-col flex-grow bg-white border-r border-gray-200">
-          <div className="flex h-16 items-center px-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">Securet Flow</h2>
+        <div className="flex flex-col flex-grow bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
+          <div className="flex h-16 items-center px-4 border-b border-gray-200 dark:border-gray-700">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Securet Flow</h2>
           </div>
           
           <nav className="flex-1 space-y-1 px-2 py-4">
@@ -102,10 +102,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
                 key={item.name}
                 to={item.href}
                 className={({ isActive }) =>
-                  `group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
+                  `group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors ${
                     isActive
-                      ? 'bg-blue-100 text-blue-900'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                      ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100'
+                      : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'
                   }`
                 }
               >
@@ -116,16 +116,16 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               </NavLink>
             ))}
             
-            <div className="pt-4 border-t border-gray-200">
+            <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
               {secondaryNavigation.map((item) => (
                 <NavLink
                   key={item.name}
                   to={item.href}
                   className={({ isActive }) =>
-                    `group flex items-center px-2 py-2 text-sm font-medium rounded-md ${
+                    `group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors ${
                       isActive
-                        ? 'bg-blue-100 text-blue-900'
-                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                        ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100'
+                        : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'
                     }`
                   }
                 >

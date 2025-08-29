@@ -9,6 +9,13 @@ const Login = React.lazy(() => import('../pages/Login'));
 const Scans = React.lazy(() => import('../pages/Scans'));
 const Targets = React.lazy(() => import('../pages/Targets'));
 const Vulnerabilities = React.lazy(() => import('../pages/Vulnerabilities'));
+const Reports = React.lazy(() => import('../pages/Reports'));
+const Analytics = React.lazy(() => import('../pages/Analytics'));
+const AIAnalysis = React.lazy(() => import('../pages/AIAnalysis'));
+const Settings = React.lazy(() => import('../pages/Settings'));
+const Profile = React.lazy(() => import('../pages/Profile'));
+const Docs = React.lazy(() => import('../pages/Docs'));
+const Support = React.lazy(() => import('../pages/Support'));
 
 // Loading component
 const PageLoader = () => (
@@ -53,6 +60,34 @@ export const routes: RouteObject[] = [
       {
         path: 'vulnerabilities',
         element: withSuspense(Vulnerabilities),
+      },
+      {
+        path: 'reports',
+        element: withSuspense(Reports),
+      },
+      {
+        path: 'analytics',
+        element: withSuspense(Analytics),
+      },
+      {
+        path: 'ai-analysis',
+        element: withSuspense(AIAnalysis),
+      },
+      {
+        path: 'settings',
+        element: withSuspense(Settings),
+      },
+      {
+        path: 'profile',
+        element: withSuspense(Profile),
+      },
+      {
+        path: 'docs',
+        element: withSuspense(Docs),
+      },
+      {
+        path: 'support',
+        element: withSuspense(Support),
       },
     ],
   },

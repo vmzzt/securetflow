@@ -1,17 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { 
-  ShieldCheckIcon,
-  ExclamationTriangleIcon,
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import {
   ChartBarIcon,
-  ServerIcon,
-  CheckCircleIcon,
   ClockIcon,
-  UserIcon,
+  ExclamationTriangleIcon,
   GlobeAltIcon
 } from '@heroicons/react/24/outline';
 import { Card } from '@components/ui/Card';
 import { MetricCard } from '@components/ui/MetricCard';
-import { VulnerabilityChart } from '@components/charts/VulnerabilityChart';
+import { VulnerabilityChart } from '@components/charts/VulnerabilityChart.tsx';
 import { RecentScans } from '@components/Dashboard/RecentScans';
 import { useAuthStore } from '@stores/authStore';
 import { useScanStore } from '@stores/scanStore';

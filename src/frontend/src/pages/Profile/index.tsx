@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuthStore } from '@stores/authStore';
+import { apiService } from '@/services/api/client';
 
 const Profile: React.FC = () => {
-  const { user } = useAuthStore();
+  const { user, setUser } = useAuthStore();
   const [isEditing, setIsEditing] = useState(false);
   const [profile, setProfile] = useState({
     fullName: user?.full_name || 'João Silva',
     email: user?.email || 'joao.silva@company.com',
-    role: user?.role || 'Administrador',
-    department: 'TI',
+    role_id: (user as any)?.role_id || undefined,
+    department: (user as any)?.department || 'TI',
     phone: '+55 (11) 99999-9999',
     bio: 'Especialista em segurança da informação com mais de 5 anos de experiência.'
   });
@@ -19,14 +20,45 @@ const Profile: React.FC = () => {
     confirm: ''
   });
 
-  const handleSave = () => {
-    // Aqui você implementaria a lógica para salvar as alterações
-    setIsEditing(false);
+  async function loadProfile() {
+    try {
+      const res = await apiService.get<any>('/api/v1/profile/');
+      const p = res.data;
+      setProfile((prev) => ({
+        ...prev,
+        fullName: p.full_name || prev.fullName,
+        email: p.email || prev.email,
+        department: p.department || prev.department,
+        role_id: p.role_id ?? prev.role_id,
+      }));
+    } catch {}
+  }
+
+  useEffect(() => { loadProfile(); }, []);
+
+  const handleSave = async () => {
+    try {
+      await apiService.put('/api/v1/profile/', {
+        full_name: profile.fullName,
+        email: profile.email,
+        department: profile.department,
+        role_id: profile.role_id,
+      });
+      setIsEditing(false);
+      // Atualizar store do usuário
+      setUser({ ...(user as any), full_name: profile.fullName, email: profile.email, department: profile.department, role_id: profile.role_id });
+    } catch {}
   };
 
-  const handlePasswordChange = () => {
-    // Aqui você implementaria a lógica para alterar a senha
-    setPassword({ current: '', new: '', confirm: '' });
+  const handlePasswordChange = async () => {
+    if (password.new !== password.confirm) return;
+    try {
+      await apiService.post('/api/v1/profile/change-password', {
+        current_password: password.current,
+        new_password: password.new,
+      });
+      setPassword({ current: '', new: '', confirm: '' });
+    } catch {}
   };
 
   return (
@@ -56,8 +88,8 @@ const Profile: React.FC = () => {
                 </span>
               </div>
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{profile.fullName}</h2>
-              <p className="text-gray-600 dark:text-gray-400">{profile.role}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-500">{profile.department}</p>
+              <p className="text-gray-600 dark:text-gray-400">{profile.department}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-500">{profile.email}</p>
             </div>
 
             <div className="mt-6 space-y-3">
@@ -116,19 +148,6 @@ const Profile: React.FC = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Cargo
-                </label>
-                <input
-                  type="text"
-                  value={profile.role}
-                  onChange={(e) => setProfile({ ...profile, role: e.target.value })}
-                  disabled={!isEditing}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Departamento
                 </label>
                 <input
@@ -139,32 +158,6 @@ const Profile: React.FC = () => {
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed"
                 />
               </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Telefone
-                </label>
-                <input
-                  type="tel"
-                  value={profile.phone}
-                  onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
-                  disabled={!isEditing}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed"
-                />
-              </div>
-            </div>
-
-            <div className="mt-6">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Bio
-              </label>
-              <textarea
-                value={profile.bio}
-                onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
-                disabled={!isEditing}
-                rows={4}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed"
-              />
             </div>
 
             {isEditing && (
@@ -226,7 +219,7 @@ const Profile: React.FC = () => {
               <div className="flex justify-end">
                 <button
                   onClick={handlePasswordChange}
-                  disabled={!password.current || !password.new || !password.confirm}
+                  disabled={!password.current || !password.new || !password.confirm || password.new !== password.confirm}
                   className="bg-red-600 dark:bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-700 dark:hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Alterar Senha

@@ -10,10 +10,9 @@ from sqlalchemy.future import select
 from sqlalchemy.orm import relationship
 from typing import Optional, List
 import logging
-from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 
-Base = declarative_base()
+from app.core.database import Base
 
 logger = logging.getLogger(__name__)
 

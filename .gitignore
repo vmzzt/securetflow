@@ -301,4 +301,10 @@ Thumbs.db
 uploads/
 downloads/
 temp/
-cache/ 
+cache/
+
+# Securet Flow: infra e AI (artefatos de desenvolvimento)
+infra/db/data/
+src/ai/godofreda/backend/logs/
+src/ai/godofreda/audio_cache/
+src/ai/godofreda/uploads/ 

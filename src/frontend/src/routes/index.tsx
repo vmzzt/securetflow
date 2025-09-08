@@ -10,6 +10,7 @@ const Scans = React.lazy(() => import('../pages/Scans'));
 const Targets = React.lazy(() => import('../pages/Targets'));
 const Vulnerabilities = React.lazy(() => import('../pages/Vulnerabilities'));
 const Reports = React.lazy(() => import('../pages/Reports'));
+const Users = React.lazy(() => import('../pages/Users'));
 const Analytics = React.lazy(() => import('../pages/Analytics'));
 const AIAnalysis = React.lazy(() => import('../pages/AIAnalysis'));
 const Settings = React.lazy(() => import('../pages/Settings'));
@@ -64,6 +65,10 @@ export const routes: RouteObject[] = [
       {
         path: 'reports',
         element: withSuspense(Reports),
+      },
+      {
+        path: 'users',
+        element: withSuspense(Users),
       },
       {
         path: 'analytics',

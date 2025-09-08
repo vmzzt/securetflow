@@ -7,7 +7,8 @@ interface User {
   username: string;
   email: string;
   full_name?: string;
-  role?: string;
+  role_id?: number;
+  department?: string;
 }
 
 interface AuthState {
@@ -36,8 +37,14 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true });
         
         try {
-          const response = await authApi.login(username, password);
-          const { user, access_token } = response;
+          const tokenResponse = await authApi.login(username, password);
+          const { access_token } = tokenResponse;
+
+          // Set token in API client
+          authApi.setToken(access_token);
+
+          // Fetch current user info
+          const user = await authApi.getCurrentUser();
           
           set({ 
             user, 
@@ -45,10 +52,6 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: true,
             isLoading: false 
           });
-          
-          // Set token in API client
-          authApi.setToken(access_token);
-          
         } catch (error) {
           set({ isLoading: false });
           throw error;

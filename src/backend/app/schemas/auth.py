@@ -19,6 +19,8 @@ class UserBase(BaseModel):
     email: EmailStr
     full_name: Optional[str] = None
     is_active: bool = True
+    department: Optional[str] = None
+    role_id: Optional[int] = None
 
 class UserCreate(UserBase):
     password: str
@@ -44,9 +46,12 @@ class UserUpdate(BaseModel):
     email: Optional[EmailStr] = None
     full_name: Optional[str] = None
     is_active: Optional[bool] = None
+    department: Optional[str] = None
+    role_id: Optional[int] = None
 
 class UserResponse(UserBase):
     id: int
+    last_login: Optional[datetime] = None
     created_at: datetime
     updated_at: datetime
     

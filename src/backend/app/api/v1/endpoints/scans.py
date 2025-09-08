@@ -11,10 +11,12 @@ from app.schemas import ScanCreate, ScanUpdate, ScanResponse
 from app.core.database import get_db
 from app.core.auth import get_current_user
 from datetime import datetime
+from app.core.security import require_permission
 
 router = APIRouter()
 
 @router.post("/", response_model=ScanResponse)
+@require_permission("write:scans")
 async def create_scan(
     scan: ScanCreate,
     current_user: User = Depends(get_current_user),
@@ -27,6 +29,12 @@ async def create_scan(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Target não encontrado"
+        )
+    # Verificar ownership do target
+    if target.user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Sem permissão para usar este target"
         )
     
     # Criar scan
@@ -45,6 +53,7 @@ async def create_scan(
     return db_scan
 
 @router.get("/", response_model=List[ScanResponse])
+@require_permission("read:scans")
 async def list_scans(
     skip: int = 0,
     limit: int = 100,
@@ -57,6 +66,7 @@ async def list_scans(
     return scans
 
 @router.get("/{scan_id}", response_model=ScanResponse)
+@require_permission("read:scans")
 async def get_scan(
     scan_id: int,
     current_user: User = Depends(get_current_user),
@@ -77,6 +87,7 @@ async def get_scan(
     return scan
 
 @router.put("/{scan_id}", response_model=ScanResponse)
+@require_permission("write:scans")
 async def update_scan(
     scan_id: int,
     scan_update: ScanUpdate,
@@ -105,6 +116,7 @@ async def update_scan(
     return scan
 
 @router.delete("/{scan_id}")
+@require_permission("write:scans")
 async def delete_scan(
     scan_id: int,
     current_user: User = Depends(get_current_user),
@@ -128,6 +140,7 @@ async def delete_scan(
     return {"message": "Scan deletado com sucesso"}
 
 @router.post("/{scan_id}/start")
+@require_permission("write:scans")
 async def start_scan(
     scan_id: int,
     current_user: User = Depends(get_current_user),
@@ -164,6 +177,7 @@ async def start_scan(
     return {"message": "Scan iniciado com sucesso"}
 
 @router.post("/{scan_id}/stop")
+@require_permission("write:scans")
 async def stop_scan(
     scan_id: int,
     current_user: User = Depends(get_current_user),

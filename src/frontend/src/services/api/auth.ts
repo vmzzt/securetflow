@@ -5,12 +5,13 @@ export interface User {
   username: string;
   email: string;
   full_name?: string;
-  role?: string;
+  role_id?: number;
+  department?: string;
 }
 
-export interface LoginResponse {
-  user: User;
+export interface TokenResponse {
   access_token: string;
+  token_type: string;
 }
 
 class AuthApi {
@@ -22,17 +23,17 @@ class AuthApi {
     apiService.clearAuthToken();
   }
 
-  async login(username: string, password: string): Promise<LoginResponse> {
-    const response = await apiService.post<LoginResponse>('/api/v1/auth/login', {
-      username,
-      password
-    });
+  async login(username: string, password: string): Promise<TokenResponse> {
+    const form = new URLSearchParams();
+    form.append('username', username);
+    form.append('password', password);
     
+    const response = await apiService.postForm<TokenResponse>('/api/v1/auth/login', form);
     return response.data;
   }
 
   async getCurrentUser(): Promise<User> {
-    const response = await apiService.get<User>('/api/v1/auth/user');
+    const response = await apiService.get<User>('/api/v1/auth/me');
     return response.data;
   }
 

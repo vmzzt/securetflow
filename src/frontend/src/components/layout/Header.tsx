@@ -83,7 +83,7 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
                   {user?.full_name || user?.username || 'Usuário'}
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {user?.role || 'Administrador'}
+                  {user?.department || 'Usuário'}
                 </p>
               </div>
               <svg className="h-4 w-4 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">

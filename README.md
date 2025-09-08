@@ -76,7 +76,7 @@ cp .env.example .env
 # Edite o arquivo .env com suas configurações
 
 # Inicie o sistema
-docker-compose up -d
+docker compose -f infra/docker/docker-compose.yml up -d
 
 # Acesse a aplicação
 # Frontend: http://localhost:3000
@@ -248,8 +248,11 @@ securetflow/
 │       │   ├── stores/     # Zustand stores
 │       │   └── services/   # Serviços API
 │       └── package.json
-├── docker-compose.yml     # Orquestração Docker
-├── nginx.conf            # Configuração Nginx
+├── infra/
+│   ├── docker/
+│   │   └── docker-compose.yml     # Orquestração Docker
+│   └── nginx/
+│       └── nginx.conf            # Configuração Nginx
 └── README.md
 ```
 

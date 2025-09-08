@@ -3,7 +3,7 @@ Securet Flow SSC - User Model
 User database model and operations
 """
 
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text, ForeignKey
 from sqlalchemy.orm import relationship
 from datetime import datetime
 
@@ -19,10 +19,14 @@ class User(Base):
     full_name = Column(String(100))
     is_active = Column(Boolean, default=True)
     is_superuser = Column(Boolean, default=False)
+    role_id = Column(Integer, ForeignKey("roles.id"), nullable=True)
+    department = Column(String(100))
+    last_login = Column(DateTime)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # Relacionamentos
     scans = relationship("Scan", back_populates="user")
     targets = relationship("Target", back_populates="user")
-    reports = relationship("Report", back_populates="user") 
+    reports = relationship("Report", back_populates="user")
+    role = relationship("Role", back_populates="users") 

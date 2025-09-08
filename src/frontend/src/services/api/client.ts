@@ -19,6 +19,18 @@ class ApiService {
       },
     });
 
+    // Inicializar token do storage persistente (zustand persist: auth-storage)
+    try {
+      const raw = window.localStorage.getItem('auth-storage');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        const token = parsed?.state?.token;
+        if (token) {
+          this.authToken = token;
+        }
+      }
+    } catch {}
+
     this.setupInterceptors();
   }
 
@@ -65,6 +77,16 @@ class ApiService {
 
   async post<T>(url: string, data?: any): Promise<ApiResponse<T>> {
     const response = await this.client.post(url, data);
+    return {
+      data: response.data,
+      success: true
+    };
+  }
+
+  async postForm<T>(url: string, data: URLSearchParams | string): Promise<ApiResponse<T>> {
+    const response = await this.client.post(url, data, {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    });
     return {
       data: response.data,
       success: true

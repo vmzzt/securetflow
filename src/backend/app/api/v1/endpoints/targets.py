@@ -10,10 +10,12 @@ from app.models import User, Target
 from app.schemas import TargetCreate, TargetUpdate, TargetResponse
 from app.core.database import get_db
 from app.core.auth import get_current_user
+from app.core.security import require_permission
 
 router = APIRouter()
 
 @router.post("/", response_model=TargetResponse)
+@require_permission("write:targets")
 async def create_target(
     target: TargetCreate,
     current_user: User = Depends(get_current_user),
@@ -37,6 +39,7 @@ async def create_target(
     return db_target
 
 @router.get("/", response_model=List[TargetResponse])
+@require_permission("read:targets")
 async def list_targets(
     skip: int = 0,
     limit: int = 100,
@@ -49,6 +52,7 @@ async def list_targets(
     return targets
 
 @router.get("/{target_id}", response_model=TargetResponse)
+@require_permission("read:targets")
 async def get_target(
     target_id: int,
     current_user: User = Depends(get_current_user),
@@ -69,6 +73,7 @@ async def get_target(
     return target
 
 @router.put("/{target_id}", response_model=TargetResponse)
+@require_permission("write:targets")
 async def update_target(
     target_id: int,
     target_update: TargetUpdate,
@@ -97,6 +102,7 @@ async def update_target(
     return target
 
 @router.delete("/{target_id}")
+@require_permission("write:targets")
 async def delete_target(
     target_id: int,
     current_user: User = Depends(get_current_user),

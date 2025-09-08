@@ -33,7 +33,7 @@ services:
   # Backend API
   backend:
     build:
-      context: ./src/backend
+      context: ../../src/backend
       dockerfile: Dockerfile
     container_name: securetflow-backend
     user: "1000:1000"  # Non-root user
@@ -50,7 +50,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./src/backend:/app
+      - ../../src/backend:/app
     networks:
       - securet-network
     restart: unless-stopped
@@ -60,14 +60,13 @@ services:
   # Frontend
   frontend:
     build:
-      context: ./src/frontend
+      context: ../../src/frontend
       dockerfile: Dockerfile
     container_name: securetflow-frontend
-    user: "101:101"  # Nginx user
     ports:
-      - "80:80"
+      - "8080:80"
     environment:
-      - VITE_API_URL=http://localhost:8000
+      - VITE_API_URL=http://backend:8000
     depends_on:
       - backend
     networks:

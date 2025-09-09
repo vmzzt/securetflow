@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: 'SecuretFlow'
+    orgId: 1
+    folder: 'SecuretFlow'
+    type: file
+    options:
+      path: /var/lib/grafana/dashboards
+      disableDeletion: true
+      updateIntervalSeconds: 30 

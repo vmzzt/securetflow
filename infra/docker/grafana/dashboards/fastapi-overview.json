@@ -1,0 +1,22 @@
+{
+  "title": "SecuretFlow - FastAPI Overview",
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Requests/sec",
+      "targets": [{"expr": "sum(rate(http_requests_total[1m]))"}]
+    },
+    {
+      "type": "graph",
+      "title": "Request Duration (p95)",
+      "targets": [{"expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))"}]
+    },
+    {
+      "type": "stat",
+      "title": "5xx Error Rate",
+      "targets": [{"expr": "sum(rate(http_requests_total{status=~\"5..\"}[5m]))"}]
+    }
+  ],
+  "schemaVersion": 36,
+  "version": 1
+} 

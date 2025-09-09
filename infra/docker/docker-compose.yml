@@ -3,12 +3,19 @@ services:
   postgres:
     image: postgres:15
     container_name: securetflow-postgres
+    env_file:
+      - ../../.env
     environment:
-      POSTGRES_DB: securet_flow
-      POSTGRES_USER: securet_user
-      POSTGRES_PASSWORD: securet_password
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ../postgres/pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
+      - ../postgres/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+      - ../postgres/certs/server.crt:/var/lib/postgresql/server.crt:ro
+      - ../postgres/certs/server.key:/var/lib/postgresql/server.key:ro
+    command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf", "-c", "hba_file=/etc/postgresql/pg_hba.conf"]
     ports:
       - "5432:5432"
     networks:
@@ -16,12 +23,20 @@ services:
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # Redis Cache
   redis:
     image: redis:7-alpine
     container_name: securetflow-redis
     user: "999:999"  # Non-root user
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    volumes:
+      - ../redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
     ports:
       - "6379:6379"
     networks:
@@ -29,6 +44,13 @@ services:
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
+    env_file:
+      - ../../.env
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   # Backend API
   backend:
@@ -37,20 +59,57 @@ services:
       dockerfile: Dockerfile
     container_name: securetflow-backend
     user: "1000:1000"  # Non-root user
+    env_file:
+      - ../../.env
     environment:
-      - DATABASE_URL=postgresql://securet_user:securet_password@postgres:5432/securet_flow
-      - REDIS_URL=redis://redis:6379
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - JWT_ALGORITHM=${JWT_ALGORITHM}
+      - JWT_PRIVATE_KEY=${JWT_PRIVATE_KEY}
+      - JWT_PUBLIC_KEY=${JWT_PUBLIC_KEY}
       - DEBUG=${DEBUG}
+      - LOKI_URL=${LOKI_URL}
+      - USE_CELERY=${USE_CELERY}
+      - LOG_DIR=/tmp/logs
     depends_on:
       postgres:
-        condition: service_started
+        condition: service_healthy
       redis:
-        condition: service_started
+        condition: service_healthy
     ports:
       - "8000:8000"
     volumes:
       - ../../src/backend:/app
+    networks:
+      - securet-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  celeryworker:
+    build:
+      context: ../../src/backend
+      dockerfile: Dockerfile
+    container_name: securetflow-celery
+    user: "1000:1000"
+    env_file:
+      - ../../.env
+    environment:
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_BACKEND_URL=redis://redis:6379/1
+      - USE_CELERY=true
+    command: ["celery", "-A", "app.services.dast_tasks.celery_app", "worker", "--loglevel=INFO"]
+    depends_on:
+      redis:
+        condition: service_healthy
     networks:
       - securet-network
     restart: unless-stopped
@@ -65,18 +124,51 @@ services:
     container_name: securetflow-frontend
     ports:
       - "8080:80"
+      - "8443:443"
     environment:
-      - VITE_API_URL=http://backend:8000
+      - VITE_API_URL=https://localhost:8443/api
     depends_on:
-      - backend
+      backend:
+        condition: service_started
     networks:
       - securet-network
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
+    volumes:
+      - ../certs:/etc/nginx/certs:ro
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Postgres Backup (local)
+  pgbackup:
+    image: prodrigestivill/postgres-backup-local:15
+    container_name: securetflow-pgbackup
+    env_file:
+      - ../../.env
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - SCHEDULE=@daily
+      - BACKUP_DIR=/backups
+      - BACKUP_KEEP_DAYS=7
+    volumes:
+      - postgres_backups:/backups
+    networks:
+      - securet-network
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
 
 volumes:
   postgres_data:
+  postgres_backups:
 
 networks:
   securet-network:

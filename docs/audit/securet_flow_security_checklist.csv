@@ -1,0 +1,27 @@
+Item,Category,Priority
+FastAPI CORS configurado,Backend,CRÍTICA
+HTTPS/TLS habilitado,Backend,CRÍTICA
+Rate limiting implementado,Backend,CRÍTICA
+Headers de segurança configurados,Backend,CRÍTICA
+Validação de entrada com Pydantic,Backend,ALTA
+Logging de segurança ativo,Backend,ALTA
+JWT com algoritmo seguro,Backend,CRÍTICA
+Secrets management configurado,Backend,CRÍTICA
+PostgreSQL hardening aplicado,Database,CRÍTICA
+SSL/TLS para conexões DB,Database,CRÍTICA
+Senhas seguras configuradas,Database,CRÍTICA
+Backup criptografado automatizado,Database,ALTA
+Auditoria de BD habilitada,Database,ALTA
+Redis authentication ativa,Database,CRÍTICA
+Comandos Redis perigosos desabilitados,Database,ALTA
+Content Security Policy implementada,Frontend,CRÍTICA
+TypeScript strict mode habilitado,Frontend,MÉDIA
+Sanitização de inputs,Frontend,ALTA
+Dependências atualizadas,Frontend,ALTA
+Bundle analysis configurado,Frontend,MÉDIA
+Containers não executam como root,Infrastructure,CRÍTICA
+Secrets não hardcoded,Infrastructure,CRÍTICA
+Network segmentation configurada,Infrastructure,ALTA
+Resource limits definidos,Infrastructure,ALTA
+Health checks implementados,Infrastructure,ALTA
+Vulnerability scanning ativo,Infrastructure,CRÍTICA 

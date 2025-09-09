@@ -1,0 +1,20 @@
+Issue,Category,Priority,Description
+Implementar HTTPS em produção,Segurança,CRÍTICA,Dados transmitidos sem criptografia
+Configurar secrets management,Segurança,CRÍTICA,Credenciais hardcoded no código
+Implementar rate limiting,Segurança,CRÍTICA,Vulnerável a ataques DDoS
+Configurar firewall no Redis,Segurança,CRÍTICA,Acesso desprotegido ao cache
+Hardening do PostgreSQL,Segurança,CRÍTICA,Configurações padrão inseguras
+Implementar CSP,Segurança,CRÍTICA,Vulnerável a XSS
+Scanning de vulnerabilidades,Segurança,CRÍTICA,Dependências com vulnerabilidades
+Implementar CI/CD pipeline,DevOps,ALTA,Deploy manual propenso a erros
+Configurar monitoramento,Monitoramento,ALTA,Falta visibilidade de problemas
+Implementar testes automatizados,Qualidade,ALTA,Falta cobertura de testes
+Logging centralizado,Monitoramento,ALTA,Logs distribuídos sem correlação
+Backup automatizado,Segurança,ALTA,Risco de perda de dados
+Health checks,Performance,ALTA,Falta detecção de falhas
+Error handling robusto,Qualidade,ALTA,Tratamento inconsistente de erros
+Otimização de performance,Performance,MÉDIA,Possível lentidão em escala
+Documentação da API,Documentação,MÉDIA,Falta especificação detalhada
+Containerização otimizada,Infrastructure,MÉDIA,Imagens Docker não otimizadas
+Implementar cache inteligente,Performance,MÉDIA,Consultas repetitivas custosas
+Auditoria de código,Qualidade,MÉDIA,Falta revisão sistemática 

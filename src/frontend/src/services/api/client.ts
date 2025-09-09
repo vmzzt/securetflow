@@ -11,8 +11,13 @@ class ApiService {
   private authToken: string | null = null;
 
   constructor() {
+    const isProd = typeof window !== 'undefined' && window.location && window.location.origin;
+    const baseURL = (import.meta.env.PROD && isProd)
+      ? '/api'
+      : (import.meta.env.VITE_API_URL || 'http://localhost:8000');
+
     this.client = axios.create({
-      baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000',
+      baseURL,
       timeout: 10000,
       headers: {
         'Content-Type': 'application/json',

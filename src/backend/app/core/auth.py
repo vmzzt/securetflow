@@ -17,13 +17,34 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # Configuração do bearer token
 security = HTTPBearer()
 
+
+def _get_signing_key() -> str:
+    """Obtém a chave de assinatura de acordo com o algoritmo configurado."""
+    if settings.JWT_ALGORITHM.startswith("RS") or settings.JWT_ALGORITHM.startswith("ES"):
+        if not settings.JWT_PRIVATE_KEY:
+            raise RuntimeError("JWT_PRIVATE_KEY não configurada para algoritmo assimétrico")
+        return settings.JWT_PRIVATE_KEY
+    return settings.JWT_SECRET_KEY
+
+
+def _get_verification_key() -> str:
+    """Obtém a chave de verificação para algoritmos assimétricos."""
+    if settings.JWT_ALGORITHM.startswith("RS") or settings.JWT_ALGORITHM.startswith("ES"):
+        if not settings.JWT_PUBLIC_KEY:
+            raise RuntimeError("JWT_PUBLIC_KEY não configurada para algoritmo assimétrico")
+        return settings.JWT_PUBLIC_KEY
+    return settings.JWT_SECRET_KEY
+
+
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verifica se a senha está correta"""
     return pwd_context.verify(plain_password, hashed_password)
 
+
 def get_password_hash(password: str) -> str:
     """Gera hash da senha"""
     return pwd_context.hash(password)
+
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     """Cria token de acesso JWT"""
@@ -34,19 +55,23 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
         expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
+    signing_key = _get_signing_key()
+    encoded_jwt = jwt.encode(to_encode, signing_key, algorithm=settings.JWT_ALGORITHM)
     return encoded_jwt
+
 
 def verify_token(token: str) -> Optional[str]:
     """Verifica e decodifica o token JWT"""
     try:
-        payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
+        verification_key = _get_verification_key()
+        payload = jwt.decode(token, verification_key, algorithms=[settings.JWT_ALGORITHM])
         username: str = payload.get("sub")
         if username is None:
             return None
         return username
     except JWTError:
         return None
+
 
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
@@ -73,6 +98,7 @@ async def get_current_user(
         raise credentials_exception
     
     return user
+
 
 async def get_current_active_user(current_user: "User" = Depends(get_current_user)) -> "User":
     """Obtém o usuário atual ativo"""

@@ -8,6 +8,7 @@ from app.api.v1.endpoints import auth, scans, targets, dashboard, users, vulnera
 from app.api.v1.endpoints import roles
 from app.api.v1.endpoints import profile
 from app.api.v1.endpoints import ai, monitoring
+from app.api.v1.endpoints import dast
 
 api_router = APIRouter()
 
@@ -22,4 +23,5 @@ api_router.include_router(roles.router, prefix="/roles", tags=["roles"])
 api_router.include_router(profile.router, prefix="/profile", tags=["profile"])
 api_router.include_router(dashboard.router, prefix="/dashboard", tags=["dashboard"])
 api_router.include_router(ai.router, prefix="/ai", tags=["ai"])
-api_router.include_router(monitoring.router, prefix="/monitoring", tags=["monitoring"]) 
+api_router.include_router(monitoring.router, prefix="/monitoring", tags=["monitoring"])
+api_router.include_router(dast.router, prefix="/dast", tags=["dast"]) 

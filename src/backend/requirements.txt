@@ -25,13 +25,20 @@ cryptography==41.0.7
 # HTTP Client
 httpx==0.25.2
 aiohttp==3.9.1
+requests==2.32.3
 
 # Redis
 redis==5.0.1
 aioredis==2.0.1
 
+# Celery
+celery==5.3.6
+
 # Rate Limiting
 slowapi==0.1.9
+
+# Metrics
+prometheus-fastapi-instrumentator==6.1.0
 
 # Logging
 loguru==0.7.2

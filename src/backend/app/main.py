@@ -12,12 +12,15 @@ import logging
 from app.core.config import settings
 from app.core.database import init_db, close_db
 from app.api.v1.api import api_router
+from app.core.logging import setup_logging
+from app.core.middleware import RateLimitMiddleware, LoggingMiddleware, ErrorHandlingMiddleware
+import redis.asyncio as redis
+
+# Prometheus metrics
+from prometheus_fastapi_instrumentator import Instrumentator
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+setup_logging()
 logger = logging.getLogger(__name__)
 
 @asynccontextmanager
@@ -28,6 +31,13 @@ async def lifespan(app: FastAPI):
     await init_db()
     logger.info("Application started successfully")
     
+    # Start metrics
+    try:
+        Instrumentator().instrument(app).expose(app, include_in_schema=False)
+        logger.info("Prometheus metrics exposed at /metrics")
+    except Exception as e:
+        logger.warning(f"Prometheus instrumentation failed: {e}")
+
     yield
     
     # Shutdown
@@ -61,6 +71,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Logging & Error handling
+app.add_middleware(LoggingMiddleware)
+app.add_middleware(ErrorHandlingMiddleware)
+
+# Rate limiting (Redis)
+try:
+    redis_client = redis.from_url(settings.REDIS_URL, decode_responses=True)
+    app.add_middleware(RateLimitMiddleware, redis_client=redis_client)
+    logger.info("Rate limiting middleware enabled")
+except Exception as e:
+    logger.error(f"Failed to initialize Redis for rate limiting: {e}")
+
 # Include API router
 app.include_router(api_router, prefix="/api/v1")
 
@@ -92,6 +114,20 @@ async def add_security_headers(request: Request, call_next):
     response.headers["X-XSS-Protection"] = "1; mode=block"
     response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = (
+        "geolocation=(), microphone=(), camera=(), fullscreen=(self)"
+    )
+
+    # Content Security Policy (CSP)
+    csp = (
+        "default-src 'self'; "
+        "base-uri 'self'; frame-ancestors 'none'; object-src 'none'; "
+        "script-src 'self'; style-src 'self' 'unsafe-inline'; "
+        "img-src 'self' data:; font-src 'self' data:; "
+        "connect-src 'self' http: https: ws: wss:; "
+        "form-action 'self'"
+    )
+    response.headers["Content-Security-Policy"] = csp
     
     return response
 

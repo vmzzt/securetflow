@@ -4,7 +4,7 @@ Database connection and session management
 """
 
 from typing import Generator
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.orm import declarative_base
 import logging
@@ -95,7 +95,7 @@ async def check_db_health() -> bool:
     """Check database health (sync)"""
     try:
         with engine.connect() as conn:
-            conn.execute("SELECT 1")
+            conn.execute(text("SELECT 1"))
         return True
     except Exception as e:
         logger.error(f"Database health check failed: {e}")

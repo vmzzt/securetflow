@@ -1,0 +1,20 @@
+{
+  "title": "SecuretFlow - App Logs",
+  "panels": [
+    {
+      "type": "logs",
+      "title": "Application Logs",
+      "options": {
+        "showTime": true,
+        "showLabels": true
+      },
+      "targets": [
+        {
+          "expr": "{app=\"securetflow\"}"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 36,
+  "version": 1
+} 

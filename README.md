@@ -11,6 +11,88 @@
 
 Securet Flow SSC é uma plataforma completa de segurança cibernética que combina análise de vulnerabilidades, monitoramento em tempo real, automação de scans e inteligência artificial para proteger infraestruturas críticas.
 
+## 🚀 **Execução Rápida (Docker)**
+
+1. Crie e preencha o arquivo `.env` na raiz (exemplo abaixo):
+
+```
+# Application
+DEBUG=false
+HOST=0.0.0.0
+PORT=8000
+LOG_LEVEL=INFO
+
+# Observability
+LOKI_URL=http://loki:3100/loki/api/v1/push
+
+# Celery/Worker
+USE_CELERY=true
+CELERY_BROKER_URL=redis://redis:6379/0
+CELERY_BACKEND_URL=redis://redis:6379/1
+
+# Database
+POSTGRES_DB=securet_flow
+POSTGRES_USER=securet_user
+POSTGRES_PASSWORD=ChangeMe123!
+DATABASE_URL=postgresql://securet_user:ChangeMe123!@postgres:5432/securet_flow
+
+# Redis
+REDIS_PASSWORD=ChangeRedis123!
+REDIS_URL=redis://:ChangeRedis123!@redis:6379
+
+# JWT
+JWT_ALGORITHM=HS256
+JWT_SECRET_KEY=SuperSecretKey_Change_In_Prod
+
+# CORS
+CORS_ORIGINS=["http://localhost:8080","https://localhost:8443"]
+```
+
+2. Gere certificados self-signed para desenvolvimento (TLS do Postgres e do Nginx):
+
+```
+# Postgres
+mkdir -p infra/postgres/certs
+openssl req -new -x509 -days 365 -nodes \
+  -out infra/postgres/certs/server.crt \
+  -keyout infra/postgres/certs/server.key \
+  -subj "/CN=postgres"
+chmod 600 infra/postgres/certs/server.key
+
+# Frontend (Nginx)
+mkdir -p infra/certs
+openssl req -new -x509 -days 365 -nodes \
+  -out infra/certs/fullchain.pem \
+  -keyout infra/certs/privkey.pem \
+  -subj "/CN=localhost"
+```
+
+3. Suba os serviços principais:
+
+```
+docker compose --env-file .env -f infra/docker/docker-compose.yml up -d --build
+```
+
+4. (Opcional) Observabilidade (Prometheus/Grafana/Loki):
+
+```
+docker compose -f infra/docker/observability-compose.yml up -d
+```
+
+5. Endpoints:
+- Frontend: https://localhost:8443
+- Backend API: http://localhost:8000/api/v1
+- Docs: http://localhost:8000/docs (em DEBUG=true)
+- Grafana: http://localhost:3001 (admin/admin)
+
+## ✅ **O que está incluído**
+- CORS, headers de segurança e CSP no backend
+- Rate limiting com Redis
+- Logging centralizado (opcional envio ao Loki via `LOKI_URL`)
+- Métricas Prometheus em `/metrics`
+- Worker Celery opcional para DAST (`USE_CELERY=true`)
+- Stubs DAST (ZAP/Nuclei) com fila assíncrona
+
 ## 🚀 **Características Principais**
 
 ### 🎯 **Funcionalidades Core**

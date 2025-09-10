@@ -150,8 +150,8 @@ docker compose -f infra/docker/observability-compose.yml up -d
 
 ```bash
 # Clone o repositório
-git clone https://github.com/seu-usuario/securet-flow-ssc.git
-cd securet-flow-ssc
+git clone https://github.com/vmzzt/securetflow.git
+cd securetflow
 
 # Configure as variáveis de ambiente
 cp .env.example .env
